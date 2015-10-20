@@ -34,6 +34,17 @@ describe Podoff::Document do
     end
   end
 
+  describe '#fonts' do
+
+    it 'returns the font obj' do
+
+      expect(@d.fonts.size).to eq(35)
+      expect(@d.fonts.first.class).to eq(Podoff::Obj)
+
+      pp @d.fonts.first
+    end
+  end
+
   describe '#write' do
 
     it 'writes the document to a given path' do

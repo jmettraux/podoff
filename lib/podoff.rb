@@ -70,10 +70,8 @@ module Podoff
       end
     end
 
-    def pages
-
-      @objs.values.select(&:is_page?)
-    end
+    def fonts; @objs.values.select(&:is_font?); end
+    def pages; @objs.values.select(&:is_page?); end
 
     def dup
 
@@ -133,6 +131,11 @@ module Podoff
     def is_page?
 
       page_number != nil
+    end
+
+    def is_font?
+
+      !! @lines.find { |l| l.match(/^\/Type \/Font\b/) }
     end
 
     def parent
