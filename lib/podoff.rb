@@ -123,13 +123,39 @@ module Podoff
 
     def page_number
 
-      m = @lines.find { |l| l.match(/^\/pdftk_PageNum (\d+)\b/) }
-      m ? m[1].to_i : nil
+      @lines.each do |l|
+        if m = l.match(/^\/pdftk_PageNum (\d+)\b/); return m[1].to_i; end
+      end
+
+      nil
     end
 
     def is_page?
 
       page_number != nil
+    end
+
+    def parent
+
+      # /Parent 2 0 R
+
+      @lines.each do |l|
+        if m = l.match(/^\/Parent (\d+ \d+) R\b/); return m[1]; end
+      end
+
+      nil
+    end
+
+    def kids
+
+      # /Kids [1 0 R 16 0 R 33 0 R]
+
+      @lines.find do |l|
+        m = l.match(/^\/Kids \[(.*)\]/)
+        return m[1].split('R').collect(&:strip) if m
+      end
+
+      []
     end
 
     def dup
