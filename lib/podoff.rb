@@ -185,6 +185,13 @@ module Podoff
       []
     end
 
+    def contents
+
+      r = lookup('Contents')
+
+      r ? r[0..-2].strip : nil
+    end
+
     def font_names
 
       @lines.inject(nil) do |names, l|

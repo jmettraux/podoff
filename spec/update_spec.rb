@@ -23,7 +23,10 @@ describe Podoff do
 
       p1 = @d.page(1)
 
-      # TODO continue me
+      pp p1.lines
+      pp p1.kids
+
+      #p1.prepend_text(
     end
   end
 end

@@ -62,6 +62,19 @@ describe Podoff::Obj do
     end
   end
 
+  describe '#contents' do
+
+    it 'returns the Contents reference' do
+
+      expect(@d.objs['1 0'].contents).to eq('3 0')
+    end
+
+    it 'returns nil if none' do
+
+      expect(@d.objs['224 0'].contents).to eq(nil)
+    end
+  end
+
   describe '#font_names' do
 
     it 'returns a list of font names visible in this obj' do
