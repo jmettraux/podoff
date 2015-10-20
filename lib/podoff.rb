@@ -75,6 +75,21 @@ module Podoff
       @objs.values.select(&:is_page?)
     end
 
+    def dup
+
+      d0 = self
+
+      d = d0.class.allocate
+
+      d.instance_eval do
+        @header = d0.header.dup
+        @foort = d0.footer.dup
+        @objs = d0.objs.values.inject({}) { |h, v| h[v.ref] = v.dup; h }
+      end
+
+      d
+    end
+
     def write(path)
 
       File.open(path, 'wb') do |f|
@@ -115,6 +130,15 @@ module Podoff
     def is_page?
 
       page_number != nil
+    end
+
+    def dup
+
+      o0 = self
+      o = o0.class.new(@ref)
+      o.instance_eval { @lines = o0.lines.dup }
+
+      o
     end
   end
 end

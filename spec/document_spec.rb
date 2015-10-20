@@ -47,5 +47,22 @@ describe Podoff::Document do
       expect(lines.last).to match(/^%%EOF$/)
     end
   end
+
+  describe '#dup' do
+
+    it 'produces a shallow copy of the document' do
+
+      d = @d.dup
+
+      expect(d.class
+        ).to eq(Podoff::Document)
+      expect(d.objs.hash
+        ).not_to eq(@d.objs.hash)
+      expect(d.objs.values.first.hash
+        ).not_to eq(@d.objs.values.first.hash)
+      #expect(d.objs.values.first.lines.hash
+      #  ).not_to eq(@d.objs.values.first.lines.hash)
+    end
+  end
 end
 
