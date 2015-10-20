@@ -36,12 +36,71 @@ module Podoff
 
   class Document
 
+    attr_reader :header
+    attr_reader :objs
+    attr_reader :footer
+
     def initialize(s)
 
       fail ArgumentError.new('not a PDF file') \
         unless s.match(/\A%PDF-\d+\.\d+\n/)
 
-      @s = s
+      @header = []
+      #
+      @objs = {}
+      cur = nil
+      #
+      @footer = nil
+
+      s.split("\n").each do |l|
+
+        if @footer
+          @footer << l
+        elsif m = /^(\d+ \d+) obj\b/.match(l)
+          cur = (@objs[m[1]] = Obj.new(m[1]))
+          cur << l
+        elsif m = /^xref\b/.match(l)
+          @footer = []
+          @footer << l
+        elsif cur
+          cur << l
+        else
+          @header << l
+        end
+      end
+    end
+
+    def pages
+
+      @objs.values.select(&:is_page?)
+    end
+  end
+
+  class Obj
+
+    attr_reader :ref
+    attr_reader :lines
+
+    def initialize(ref)
+
+      @ref = ref
+      @lines = []
+    end
+
+    def <<(l)
+
+      @lines << l
+    end
+
+    def page_number
+
+      m = @lines.find { |l| l.match(/^\/pdftk_PageNum (\d+)\b/) }
+      m ? m[1].to_i : nil
+    end
+
+    def is_page?
+
+      page_number != nil
     end
   end
 end
