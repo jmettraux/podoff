@@ -48,5 +48,17 @@ describe Podoff::Obj do
       expect(@d.objs['224 0'].kids).to eq([])
     end
   end
+
+  describe '#font_names' do
+
+    it 'returns a list of font names visible in this obj' do
+
+      expect(
+        @d.objs.values.first.font_names
+      ).to eq(%w[
+        C2_0 TT2 TT1 TT0 C2_2 C2_1
+      ])
+    end
+  end
 end
 

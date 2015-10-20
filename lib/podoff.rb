@@ -163,6 +163,23 @@ module Podoff
       []
     end
 
+    def font_names
+
+      @lines.inject(nil) do |names, l|
+
+        if names
+          return names if l == '>>'
+          if m = l.match(/\/([^ ]+) /); names << m[1]; end
+        elsif l.match(/\/Font\s*$/)
+          names = []
+        end
+
+        names
+      end
+
+      []
+    end
+
     def dup(new_doc)
 
       o0 = self
