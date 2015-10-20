@@ -188,6 +188,9 @@ module Podoff
 
       o
     end
+
+    def prepend_text(x, y, text)
+    end
   end
 end
 
