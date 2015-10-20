@@ -23,6 +23,19 @@ describe Podoff::Obj do
     end
   end
 
+  describe '#type' do
+
+    it 'returns the type of the obj' do
+
+      expect(@d.objs['23 0'].type).to eq('Font')
+    end
+
+    it 'returns nil if there is no type' do
+
+      expect(@d.objs['17 0'].type).to eq(nil)
+    end
+  end
+
   describe '#parent' do
 
     it 'returns the parent ref if any' do
