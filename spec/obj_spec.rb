@@ -124,5 +124,26 @@ describe Podoff::Obj do
       expect(o.lines[i]).to eq('/TrimBox [0.0 0.0 612.0 792.0]')
     end
   end
+
+  describe '#find' do
+
+    it 'returns the first sub obj that matches the given block' do
+
+      o = @d.objs['1 0']
+
+      o1 = o.find { |o| o.index('stream') }
+
+      expect(o1).not_to eq(nil)
+      expect(o1.lines.first).to eq('3 0 obj ')
+    end
+
+    it 'accept a :skip_root option'
+  end
+
+  describe '#gather' do
+
+    it 'returns a list of sub obj that match the given block'
+    it 'accept a :skip_root option'
+  end
 end
 

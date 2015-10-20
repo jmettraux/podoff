@@ -222,6 +222,18 @@ module Podoff
       o
     end
 
+    def find(opts={}, &block)
+
+      return self if block.call(self)
+
+      [ *kids, contents ].compact.each do |k|
+        o = @document.objs[k]
+        return o if o && block.call(o)
+      end
+
+      nil
+    end
+
     def prepend_text(x, y, text)
     end
   end

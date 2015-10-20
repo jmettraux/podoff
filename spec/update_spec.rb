@@ -23,8 +23,9 @@ describe Podoff do
 
       p1 = @d.page(1)
 
-      pp p1.lines
+      #pp p1.lines
       pp p1.kids
+      pp p1.contents
 
       #p1.prepend_text(
     end
