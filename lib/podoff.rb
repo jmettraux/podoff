@@ -137,6 +137,20 @@ module Podoff
       nil
     end
 
+    def index(o, start=0)
+
+      @lines[start..-1].each_with_index do |l, i|
+
+        if o.is_a?(String)
+          return start + i if l == o
+        else
+          return start + i if l.match(o)
+        end
+      end
+
+      nil
+    end
+
     def type
 
       t = lookup('Type')

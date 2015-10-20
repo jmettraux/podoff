@@ -86,5 +86,43 @@ describe Podoff::Obj do
       ])
     end
   end
+
+  describe '#index' do
+
+    it 'returns the for a given line' do
+
+      o = @d.objs['3 0']
+
+      expect(o.index('stream')).to eq(4)
+      expect(o.index('BT')).to eq(14)
+    end
+
+    it 'returns nil when it doesn\'t find' do
+
+      o = @d.objs['3 0']
+
+      expect(o.index('nada')).to eq(nil)
+    end
+
+    it 'accepts regexes' do
+
+      o = @d.objs['1 0']
+
+      i = o.index(/^\/B.+Box /)
+
+      expect(i).to eq(39)
+      expect(o.lines[i]).to eq('/BleedBox [0.0 0.0 612.0 792.0]')
+    end
+
+    it 'accepts a start index' do
+
+      o = @d.objs['1 0']
+
+      i = o.index(/^\/.+Box /, 3)
+
+      expect(i).to eq(5)
+      expect(o.lines[i]).to eq('/TrimBox [0.0 0.0 612.0 792.0]')
+    end
+  end
 end
 
