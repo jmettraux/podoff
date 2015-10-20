@@ -166,23 +166,18 @@ module Podoff
 
       # /Parent 2 0 R
 
-      @lines.each do |l|
-        if m = l.match(/^\/Parent (\d+ \d+) R\b/); return m[1]; end
-      end
+      r = lookup('Parent')
 
-      nil
+      r ? r[0..-2].strip : nil
     end
 
     def kids
 
       # /Kids [1 0 R 16 0 R 33 0 R]
 
-      @lines.find do |l|
-        m = l.match(/^\/Kids \[(.*)\]/)
-        return m[1].split('R').collect(&:strip) if m
-      end
+      r = lookup('Kids')
 
-      []
+      (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
     end
 
     def contents
