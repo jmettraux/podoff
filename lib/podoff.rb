@@ -57,7 +57,7 @@ module Podoff
         if @footer
           @footer << l
         elsif m = /^(\d+ \d+) obj\b/.match(l)
-          cur = (@objs[m[1]] = Obj.new(m[1]))
+          cur = (@objs[m[1]] = Obj.new(self, m[1]))
           cur << l
         elsif m = /^xref\b/.match(l)
           @footer = []
@@ -82,7 +82,7 @@ module Podoff
       d.instance_eval do
         @header = d0.header.dup
         @foort = d0.footer.dup
-        @objs = d0.objs.values.inject({}) { |h, v| h[v.ref] = v.dup; h }
+        @objs = d0.objs.values.inject({}) { |h, v| h[v.ref] = v.dup(d); h }
       end
 
       d
@@ -105,11 +105,13 @@ module Podoff
 
   class Obj
 
+    attr_reader :document
     attr_reader :ref
     attr_reader :lines
 
-    def initialize(ref)
+    def initialize(doc, ref)
 
+      @document = doc
       @ref = ref
       @lines = []
     end
@@ -161,10 +163,10 @@ module Podoff
       []
     end
 
-    def dup
+    def dup(new_doc)
 
       o0 = self
-      o = o0.class.new(@ref)
+      o = o0.class.new(new_doc, @ref)
       o.instance_eval { @lines = o0.lines.dup }
 
       o

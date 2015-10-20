@@ -15,6 +15,14 @@ describe Podoff::Obj do
     @d = Podoff.load('pdfs/udocument0.pdf')
   end
 
+  describe '#document' do
+
+    it 'points to the Podoff::Document owning this Obj' do
+
+      expect(@d.objs.values.first.document).to eq(@d)
+    end
+  end
+
   describe '#parent' do
 
     it 'returns the parent ref if any' do

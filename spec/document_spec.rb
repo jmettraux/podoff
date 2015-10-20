@@ -40,8 +40,6 @@ describe Podoff::Document do
 
       expect(@d.fonts.size).to eq(35)
       expect(@d.fonts.first.class).to eq(Podoff::Obj)
-
-      pp @d.fonts.first
     end
   end
 
@@ -71,8 +69,9 @@ describe Podoff::Document do
         ).not_to eq(@d.objs.hash)
       expect(d.objs.values.first.hash
         ).not_to eq(@d.objs.values.first.hash)
-      #expect(d.objs.values.first.lines.hash
-      #  ).not_to eq(@d.objs.values.first.lines.hash)
+
+      expect(d.objs.values.first.document).to eq(d)
+      expect(@d.objs.values.first.document).to eq(@d)
     end
   end
 end
