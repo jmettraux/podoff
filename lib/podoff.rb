@@ -145,11 +145,8 @@ module Podoff
 
     def page_number
 
-      @lines.each do |l|
-        if m = l.match(/^\/pdftk_PageNum (\d+)\b/); return m[1].to_i; end
-      end
-
-      nil
+      r = lookup('pdftk_PageNum')
+      r ? r.to_i : nil
     end
 
     def is_page?
@@ -176,14 +173,12 @@ module Podoff
       # /Kids [1 0 R 16 0 R 33 0 R]
 
       r = lookup('Kids')
-
       (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
     end
 
     def contents
 
       r = lookup('Contents')
-
       r ? r[0..-2].strip : nil
     end
 
