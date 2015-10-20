@@ -33,5 +33,19 @@ describe Podoff::Document do
       expect(@d.pages.first.class).to eq(Podoff::Obj)
     end
   end
+
+  describe '#write' do
+
+    it 'writes the document to a given path' do
+
+      @d.write('tmp/out.pdf')
+
+      s = File.open('tmp/out.pdf', 'r:iso8859-1') { |f| f.read }
+      lines = s.split("\n")
+
+      expect(lines.first).to match(/^%PDF-1.7$/)
+      expect(lines.last).to match(/^%%EOF$/)
+    end
+  end
 end
 

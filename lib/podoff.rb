@@ -74,6 +74,20 @@ module Podoff
 
       @objs.values.select(&:is_page?)
     end
+
+    def write(path)
+
+      File.open(path, 'wb') do |f|
+
+        @header.each { |l| f.print(l); f.print("\n") }
+
+        @objs.values.each do |o|
+          o.lines.each { |l| f.print(l); f.print("\n") }
+        end
+
+        @footer.each { |l| f.print(l); f.print("\n") }
+      end
+    end
   end
 
   class Obj
