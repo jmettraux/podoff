@@ -27,5 +27,22 @@
 module Podoff
 
   VERSION = '0.9.0'
+
+  def self.load(path)
+
+    Podoff::Document.new(
+      File.open(path, 'r:iso8859-1') { |f| f.read })
+  end
+
+  class Document
+
+    def initialize(s)
+
+      fail ArgumentError.new('not a PDF file') \
+        unless s.match(/\A%PDF-\d+\.\d+\n/)
+
+      @s = s
+    end
+  end
 end
 
