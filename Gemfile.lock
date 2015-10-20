@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    podoff (0.0.1)
+    podoff (0.9.0)
 
 GEM
   remote: https://rubygems.org/
