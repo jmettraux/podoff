@@ -64,14 +64,19 @@ describe Podoff::Obj do
 
   describe '#contents' do
 
-    it 'returns the Contents reference' do
+    it 'returns the Contents references (single)' do
 
-      expect(@d.objs['1 0'].contents).to eq('3 0')
+      expect(@d.objs['1 0'].contents).to eq([ '3 0' ])
     end
 
-    it 'returns nil if none' do
+    it 'returns the Contents references (array)' do
 
-      expect(@d.objs['224 0'].contents).to eq(nil)
+      expect(@d.objs['16 0'].contents).to eq([ '17 0' ])
+    end
+
+    it 'returns an empty list if none' do
+
+      expect(@d.objs['224 0'].contents).to eq([])
     end
   end
 

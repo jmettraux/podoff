@@ -26,7 +26,7 @@
 
 module Podoff
 
-  VERSION = '0.9.0'
+  VERSION = '0.9.1'
 
   def self.load(path)
 
@@ -193,7 +193,7 @@ module Podoff
     def contents
 
       r = lookup('Contents')
-      r ? r[0..-2].strip : nil
+      (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
     end
 
     def font_names
@@ -226,7 +226,7 @@ module Podoff
 
       return self if block.call(self)
 
-      [ *kids, contents ].compact.each do |k|
+      (kids + contents).compact.each do |k|
         o = @document.objs[k]
         return o if o && block.call(o)
       end

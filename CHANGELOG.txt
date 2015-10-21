@@ -4,6 +4,8 @@
 
 == podoff 0.9.1  not yet released
 
+- ensure Obj#contents accepts arrays
+
 
 == podoff 0.9.0  released 2015-10-21
 
