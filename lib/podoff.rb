@@ -26,7 +26,7 @@
 
 module Podoff
 
-  VERSION = '0.9.1'
+  VERSION = '1.0.0'
 
   def self.load(path)
 

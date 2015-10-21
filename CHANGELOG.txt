@@ -2,7 +2,12 @@
 = podoff CHANGELOG.txt
 
 
-== podoff 0.9.1  not yet released
+== podoff 1.0.0  not yet released
+
+- leverage incremental updates
+
+
+== podoff 0.9.1  not released
 
 - ensure Obj#contents accepts arrays
 
