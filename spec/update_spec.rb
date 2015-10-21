@@ -22,14 +22,14 @@ describe Podoff do
       d = @d.dup
 
       p1 = d.page(1)
-      p1.prepend_text(0, 500, 'hello world!', size: 35)
-      #p1.prepend_text(0, 450, '"stuff NADA"', size: 35, font: 'C2_0')
+      p1.prepend_text(0, 500, 'hello world! xxx', size: 35, font: 'Helv')
+      #p1.prepend_text(0, 450, '"stuff NADA"', size: 35, font: 'Helv')
 
       d.write('tmp/out.pdf')
 
-      s = `grep "hello world!" tmp/out.pdf`.strip
+      s = `grep -a "hello world!" tmp/out.pdf`.strip
 
-      expect(s).to eq('BT 10 10 Td /TT0 35 Tf (hello world!)Tj ET')
+      expect(s).to eq('BT 0 500 Td /Helv 35 Tf (hello world! xxx)Tj ET')
     end
   end
 end

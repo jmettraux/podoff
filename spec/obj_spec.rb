@@ -82,7 +82,7 @@ describe Podoff::Obj do
       expect(
         @d.objs.values.first.font_names
       ).to eq(%w[
-        C2_0 TT2 TT1 TT0 C2_2 C2_1
+        C2_0 TT2 TT1 TT0 C2_2 C2_1 Helv
       ])
     end
   end
@@ -110,7 +110,7 @@ describe Podoff::Obj do
 
       i = o.index(/^\/B.+Box /)
 
-      expect(i).to eq(39)
+      expect(i).to eq(40)
       expect(o.lines[i]).to eq('/BleedBox [0.0 0.0 612.0 792.0]')
     end
 
