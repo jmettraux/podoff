@@ -2,7 +2,12 @@
 = podoff CHANGELOG.txt
 
 
-== raabro 0.0.1  released 2015-10-20
+== podoff 0.9.0  released 2015-10-21
+
+- beta release
+
+
+== podoff 0.0.1  released 2015-10-20
 
 - initial, empty, release
 
