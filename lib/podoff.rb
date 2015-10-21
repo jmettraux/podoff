@@ -50,17 +50,18 @@ module Podoff
       @objs = {}
 
       index = 0
+      sxrm, sxri = [ nil, nil ]
       #
       loop do
 
         objm = s.match(/^\d+ \d+ obj\b/, index)
-        sxrm = s.match(/\bstartxref\b/, index)
+        sxrm ||= s.match(/\bstartxref\b/, index)
 
         break unless sxrm || objm
 
         fail ArgumentError.new('failed to find "startxref"') unless sxrm
 
-        sxri = sxrm.offset(0).first
+        sxri ||= sxrm.offset(0).first
         obji = objm ? objm.offset(0).first : sxri + 1
 
         if obji < sxri
@@ -71,6 +72,7 @@ module Podoff
           m = s.match(/(\d+)\s*%%EOF/, sxrm.offset(0).last + 1)
           @xref = m[1].to_i
           index = m.offset(0).last + 1
+          sxrm, sxri = [ nil, nil ]
         end
       end
     end
