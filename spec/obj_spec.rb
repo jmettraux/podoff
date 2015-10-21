@@ -145,5 +145,39 @@ describe Podoff::Obj do
     it 'returns a list of sub obj that match the given block'
     it 'accept a :skip_root option'
   end
+
+  describe '#crop_box' do
+
+    it 'returns the [ x, y, w, h ] box for the obj' do
+
+      o = @d.objs['1 0']
+
+      expect(o.crop_box).to eq([ 0.0, 0.0, 612.0, 792.0 ])
+    end
+
+    it 'defaults to the MediaBox' do
+
+      o = @d.objs['16 0']
+
+      expect(o.crop_box).to eq([ 0.0, 0.0, 612.0, 792.0 ])
+    end
+  end
+
+  describe '#crop_dims' do
+
+    it 'returns [ w, h ]' do
+
+      o = @d.objs['1 0']
+
+      expect(o.crop_dims).to eq([ 612.0, 792.0 ])
+    end
+
+    it 'defaults to the MediaBox' do
+
+      o = @d.objs['16 0']
+
+      expect(o.crop_dims).to eq([ 612.0, 792.0 ])
+    end
+  end
 end
 

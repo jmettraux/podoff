@@ -234,6 +234,20 @@ module Podoff
       nil
     end
 
+    def crop_box
+
+      r = lookup('CropBox') || lookup('MediaBox')
+
+      r ? r.strip[1..-2].split(' ').collect(&:strip).collect(&:to_f) : nil
+    end
+
+    def crop_dims
+
+      x, y, w, h = crop_box
+
+      x ? [ w - x, h - y ] : nil
+    end
+
     def prepend_text(x, y, text, opts={})
 
       o = find { |o| o.index('BT') }
