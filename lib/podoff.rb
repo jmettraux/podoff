@@ -86,7 +86,7 @@ module Podoff
 
       d.instance_eval do
         @header = d0.header.dup
-        @foort = d0.footer.dup
+        @footer = d0.footer.dup
         @objs = d0.objs.values.inject({}) { |h, v| h[v.ref] = v.dup(d); h }
       end
 
@@ -234,7 +234,28 @@ module Podoff
       nil
     end
 
-    def prepend_text(x, y, text)
+    def prepend_text(x, y, text, opts={})
+
+      o = find { |o| o.index('BT') }
+      fail ArgumentError.new('found no BT in the tree') unless o
+
+      font = opts[:font] || o.font_names.first || 'TT0'
+      size = opts[:size] || 10
+      comm = opts[:comment]
+
+      i = o.index('BT')
+      bt = []
+      bt << 'BT'
+      bt << "#{x} #{y} Td"
+      bt << "/#{font} #{size} Tf"
+      bt << "(#{text})Tj"
+      bt << 'ET'
+      bt << " % #{comm}" if comm
+      bt = bt.join(' ')
+
+      o.lines.insert(i, bt)
+
+      o
     end
   end
 end

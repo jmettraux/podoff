@@ -21,13 +21,10 @@ describe Podoff do
 
       d = @d.dup
 
-      p1 = @d.page(1)
+      p1 = d.page(1)
+      p1.prepend_text(10, 10, 'hello world!', size: 35)
 
-      #pp p1.lines
-      pp p1.kids
-      pp p1.contents
-
-      #p1.prepend_text(
+      d.write('tmp/out.pdf')
     end
   end
 end
