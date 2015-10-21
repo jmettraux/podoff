@@ -36,36 +36,41 @@ module Podoff
 
   class Document
 
-    attr_reader :header
+    attr_reader :source
+    attr_reader :xref
     attr_reader :objs
-    attr_reader :footer
 
     def initialize(s)
 
       fail ArgumentError.new('not a PDF file') \
         unless s.match(/\A%PDF-\d+\.\d+\n/)
 
-      @header = []
-      #
+      @source = s
+      @xref = nil
       @objs = {}
-      cur = nil
+
+      index = 0
       #
-      @footer = nil
+      loop do
 
-      s.split("\n").each do |l|
+        objm = s.match(/^\d+ \d+ obj\b/, index)
+        sxrm = s.match(/\bstartxref\b/, index)
 
-        if @footer
-          @footer << l
-        elsif m = /^(\d+ \d+) obj\b/.match(l)
-          cur = (@objs[m[1]] = Obj.new(self, m[1]))
-          cur << l
-        elsif m = /^xref\b/.match(l)
-          @footer = []
-          @footer << l
-        elsif cur
-          cur << l
+        break unless sxrm || objm
+
+        fail ArgumentError.new('failed to find "startxref"') unless sxrm
+
+        sxri = sxrm.offset(0).first
+        obji = objm ? objm.offset(0).first : sxri + 1
+
+        if obji < sxri
+          obj = Podoff::Obj.parse(self, obji)
+          @objs[obj.ref] = obj
+          index = objm.offset(0).last + 1
         else
-          @header << l
+          m = s.match(/(\d+)\s*%%EOF/, sxrm.offset(0).last + 1)
+          @xref = m[1].to_i
+          index = m.offset(0).last + 1
         end
       end
     end
@@ -78,33 +83,33 @@ module Podoff
       i < 1 ? nil : @objs.values.find { |o| o.page_number == i }
     end
 
-    def dup
-
-      d0 = self
-
-      d = d0.class.allocate
-
-      d.instance_eval do
-        @header = d0.header.dup
-        @footer = d0.footer.dup
-        @objs = d0.objs.values.inject({}) { |h, v| h[v.ref] = v.dup(d); h }
-      end
-
-      d
-    end
+#    def dup
+#
+#      d0 = self
+#
+#      d = d0.class.allocate
+#
+#      d.instance_eval do
+#        @header = d0.header.dup
+#        @footer = d0.footer.dup
+#        @objs = d0.objs.values.inject({}) { |h, v| h[v.ref] = v.dup(d); h }
+#      end
+#
+#      d
+#    end
 
     def write(path)
 
-      File.open(path, 'wb') do |f|
-
-        @header.each { |l| f.print(l); f.print("\n") }
-
-        @objs.values.each do |o|
-          o.lines.each { |l| f.print(l); f.print("\n") }
-        end
-
-        @footer.each { |l| f.print(l); f.print("\n") }
-      end
+#      File.open(path, 'wb') do |f|
+#
+#        @header.each { |l| f.print(l); f.print("\n") }
+#
+#        @objs.values.each do |o|
+#          o.lines.each { |l| f.print(l); f.print("\n") }
+#        end
+#
+#        @footer.each { |l| f.print(l); f.print("\n") }
+#      end
     end
   end
 
@@ -112,23 +117,36 @@ module Podoff
 
     attr_reader :document
     attr_reader :ref
-    attr_reader :lines
+    attr_reader :start_index, :end_index
 
-    def initialize(doc, ref)
+    def initialize(doc, ref, st, en)
 
       @document = doc
       @ref = ref
-      @lines = []
+      @start_index = st
+      @end_index = en
     end
 
-    def <<(l)
+    def self.parse(doc, index)
 
-      @lines << l
+      ref = doc.source.match(/(\d+ \d+)/, index)[1]
+
+      m = doc.source.match(/\bendobj\b/, index)
+
+      fail ArgumentError.new("failed to find 'endobj' starting #{index}") \
+        unless m
+
+      Podoff::Obj.new(doc, ref, index, m.offset(0).last)
+    end
+
+    def lines
+
+      @lines ||= @document.source[@start_index, @end_index].split("\n")
     end
 
     def lookup(k)
 
-      @lines.each do |l|
+      lines.each do |l|
 
         m = l.match(/^\/#{k} (.*)$/)
         return m[1] if m
@@ -139,7 +157,7 @@ module Podoff
 
     def index(o, start=0)
 
-      @lines[start..-1].each_with_index do |l, i|
+      lines[start..-1].each_with_index do |l, i|
 
         if o.is_a?(String)
           return start + i if l == o

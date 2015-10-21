@@ -14,9 +14,11 @@ describe Podoff do
 
     it 'loads a PDF document' do
 
-      d = Podoff.load('pdfs/udocument0.pdf')
+      d = Podoff.load('pdfs/t1.pdf')
 
       expect(d.class).to eq(Podoff::Document)
+      expect(d.xref).to eq(698)
+      expect(d.objs.keys).to eq([ '1 0', '2 0', '3 0', '4 0', '5 0', '6 0' ])
     end
 
     it 'rejects items that are not PDF documents' do
