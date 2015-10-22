@@ -123,10 +123,11 @@ module Podoff
         @source = o.source
         @xref = o.xref
 
-        @objs =
-          o.objs.inject({}) { |h, (k, v)| h[k] = v.dup(self); h }
-        @obj_counters =
-          o.obj_counters.dup
+        @objs = o.objs.inject({}) { |h, (k, v)| h[k] = v.dup(self); h }
+        @obj_counters = o.obj_counters.dup
+
+        @root = o.root
+
         @additions =
           o.additions.inject({}) { |h, (k, v)| h[k] = v.dup(self); h }
 
@@ -193,11 +194,18 @@ module Podoff
           f.write("xref\n")
           f.write("0 1\n")
           f.write("0000000000 65535 f\n")
+
           pointers.each do |k, v|
             f.write("#{k.split(' ').first} 1\n")
-            f.write("#{v} 00000 n\n")
+            f.write(sprintf("%010d 00000 n\n", v))
           end
+
           f.write("trailer\n")
+          f.write("<<\n")
+          f.write("/Prev #{self.xref}\n")
+          f.write("/Size #{objs.size}\n")
+          f.write("/Root #{root} R\n")
+          f.write(">>\n")
           f.write("startxref #{xref}\n")
           f.write("%%EOF\n")
         end
@@ -318,7 +326,7 @@ module Podoff
         fail "implement me!"
       else
         i = @source.index('/Type ')
-        @source.insert(i, "/Annots #{ref} R\n")
+        @source.insert(i, "/Annots [#{ref} R]\n")
       end
       recompute_attributes
     end

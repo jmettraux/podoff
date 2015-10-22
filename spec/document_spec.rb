@@ -108,6 +108,8 @@ describe Podoff::Document do
 
       expect(d.objs.values.first.document).to equal(d)
       expect(@d.objs.values.first.document).to equal(@d)
+
+      expect(d.root).to eq('65 0')
     end
   end
 end
