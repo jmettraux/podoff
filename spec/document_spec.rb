@@ -149,6 +149,29 @@ describe Podoff::Document do
           '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj')
       end
     end
+
+    describe '#add_stream' do
+
+      it 'adds a new obj with a stream to the document' do
+
+        st = @d.add_stream('BT 70 80 Td /Helvetica 35 Tf (Hello!) Tj ET')
+
+        expect(st.ref).to eq('7 0')
+
+        expect(st.source).to eq(%{
+7 0 obj
+<< /Length 43 >>
+stream
+BT 70 80 Td /Helvetica 35 Tf (Hello!) Tj ET
+endstream
+endobj
+        }.strip)
+
+        d = Podoff.parse(@d.write(:string))
+
+        expect(d.xref).to eq(705)
+      end
+    end
   end
 end
 
