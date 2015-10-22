@@ -439,12 +439,17 @@ module Podoff
       recompute_attributes
     end
 
-    def add_to_fonts(nick, ref)
+    def insert_font(nick, obj_or_ref)
 
       fail ArgumentError.new("target '#{ref}' not a replica") \
         unless @source
 
-      @source = @source.gsub(/\/Font\s*<</, "/Font\n<<\n/#{nick} #{ref} R")
+      nick = nick[1..-1] if nick[0] == '/'
+
+      re = obj_or_ref
+      re = re.ref if re.respond_to?(:ref)
+
+      @source = @source.gsub(/\/Font\s*<</, "/Font\n<<\n/#{nick} #{re} R")
     end
 
     def insert_contents(obj_or_ref)
@@ -454,10 +459,10 @@ module Podoff
       fail ArgumentError.new("target '#{ref}' doesn't have /Contents") \
         unless @attributes[:contents]
 
-      ref = obj_or_ref
-      ref = ref.ref if ref.respond_to?(:ref)
+      re = obj_or_ref
+      re = re.ref if re.respond_to?(:ref)
 
-      add_to_attribute(:contents, ref)
+      add_to_attribute(:contents, re)
     end
     alias :insert_content :insert_contents
   end

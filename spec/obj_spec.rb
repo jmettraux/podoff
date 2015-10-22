@@ -188,9 +188,42 @@ endobj
 
     describe '#insert_font' do
 
-      it 'fails if the target hasn\'t been replicated'
-      it 'accepts name, obj'
-      it 'accepts name, obj ref'
+      it 'fails if the target hasn\'t been replicated' do
+
+        expect {
+          @d.objs['23 0'].insert_font('/Helvetica', '-1 0')
+        }.to raise_error(ArgumentError, "target '23 0' not a replica")
+      end
+
+      it 'accepts name, obj' do
+
+        fo = @d.add_base_font('/Helvetica')
+        pa = @d.re_add(@d.page(1))
+
+        pa.insert_font('MyHelv', fo)
+
+        expect(pa.source).to match(/\/Font\s+<<\s+\/MyHelv #{fo.ref} R\s+/)
+      end
+
+      it 'accepts name, obj ref' do
+
+        fo = @d.add_base_font('/Helvetica')
+        pa = @d.re_add(@d.page(1))
+
+        pa.insert_font('MyHelv', fo.ref)
+
+        expect(pa.source).to match(/\/Font\s+<<\s+\/MyHelv #{fo.ref} R\s+/)
+      end
+
+      it 'accepts a slash in front of the name' do
+
+        fo = @d.add_base_font('/Helvetica')
+        pa = @d.re_add(@d.page(1))
+
+        pa.insert_font('/MyHelv', fo.ref)
+
+        expect(pa.source).to match(/\/Font\s+<<\s+\/MyHelv #{fo.ref} R\s+/)
+      end
     end
   end
 end
