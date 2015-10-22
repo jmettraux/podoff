@@ -415,6 +415,13 @@ module Podoff
       recompute_attributes
     end
 
+    def add_to_fonts(nick, ref)
+
+      fail ArgumentError.new("obj not replicated") unless @source
+
+      @source = @source.gsub(/\/Font\s*<</, "/Font\n<<\n/#{nick} #{ref} R")
+    end
+
     def insert_content(obj)
 
       fail ArgumentError.new('target doesn\'t have /Contents') \
