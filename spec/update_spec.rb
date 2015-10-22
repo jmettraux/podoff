@@ -12,10 +12,11 @@ describe Podoff do
 
   before :all do
 
-    @d = Podoff.load('pdfs/udocument0.pdf')
+    @d0 = Podoff.load('pdfs/udocument0.pdf')
+    @t0 = Podoff.load('pdfs/t0.pdf')
   end
 
-#  describe 'Obj.prepend_text' do
+#  describe 'Obj#prepend_text' do
 #
 #    it 'adds text at the beginning of an obj' do
 #
@@ -32,5 +33,19 @@ describe Podoff do
 #      expect(s).to eq('BT 0 500 Td /Helv 35 Tf (hello world! xxx)Tj ET')
 #    end
 #  end
+
+  describe 'Obj#add_free_text' do
+
+    it 'annotates an object with free text' do
+
+      doc = @t0.dup
+      page = doc.page(1)
+
+      puts page.source
+      page.add_free_text(100, 100, 'free text', :helvetica, 15)
+
+      expect(doc.objs.size).to eq(8)
+    end
+  end
 end
 

@@ -48,6 +48,8 @@ module Podoff
     attr_reader :source
     attr_reader :xref
     attr_reader :objs
+    #
+    attr_reader :additions
 
     def initialize(s)
 
@@ -57,6 +59,7 @@ module Podoff
       @source = s
       @xref = nil
       @objs = {}
+      @additions = []
 
       index = 0
       matches = {}
@@ -92,6 +95,11 @@ module Podoff
           matches.delete(:startxref)
         end
       end
+    end
+
+    def updated?
+
+      @additions.any?
     end
 
     def dup
@@ -135,6 +143,8 @@ module Podoff
     def write(path)
 
       File.open(path, 'wb') { |f| f.write(@source) }
+
+      fail "implement me!" if updated?
     end
   end
 
@@ -159,7 +169,7 @@ module Podoff
       matches.delete(:obj)
       matches.delete(:endobj)
 
-      Podoff::Obj.new(doc, re, st, en, atts, false)
+      Podoff::Obj.new(doc, re, st, en, atts)
     end
 
     attr_reader :document
@@ -167,34 +177,30 @@ module Podoff
     attr_reader :start_index, :end_index
     attr_reader :attributes
 
-    def initialize(doc, ref, st, en, atts, addition)
+    def initialize(doc, ref, st, en, atts, source=nil)
 
       @document = doc
       @ref = ref
       @start_index = st
       @end_index = en
       @attributes = atts
-      @addition = addition
+      @source = source
     end
 
     def dup(new_doc)
 
-      o = self
-
-      d = self.class.allocate.instance_eval do
-
-        @document = new_doc
-        @ref = o.ref
-        @start_index = o.start_index
-        @end_index = o.end_index
-        @attributes = o.attributes.dup
-        @addition = o.addition?
-
-        self
-      end
+      self.class.new(new_doc, ref, start_index, end_index, attributes.dup)
     end
 
-    def addition?; @addition; end
+    def self.create(doc, ref, source)
+
+      self.new(doc, ref, nil, nil, nil, source)
+    end
+
+    def replicate
+
+      self.class.create(document, ref, source.dup)
+    end
 
     def to_a
 
@@ -203,22 +209,27 @@ module Podoff
 
     def source
 
-      @source ||= @document.source[@start_index..@end_index]
+      @source || @document.source[@start_index..@end_index]
     end
 
-    def match(regex)
+    def addition?
 
-      source.match(regex)
+      @source != nil
     end
 
-    def dmatch(regex)
-
-      if m = @document.source.match(regex, @start_index)
-        m.offset(0).last > @end_index ? nil : m
-      else
-        nil
-      end
-    end
+#    def match(regex)
+#
+#      source.match(regex)
+#    end
+#
+#    def dmatch(regex)
+#
+#      if m = @document.source.match(regex, @start_index)
+#        m.offset(0).last > @end_index ? nil : m
+#      else
+#        nil
+#      end
+#    end
 
     def type; @attributes[:type]; end
 
@@ -251,16 +262,25 @@ module Podoff
       (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
     end
 
-    def find(opts={}, &block)
+#    def find(opts={}, &block)
+#
+#      return self if block.call(self)
+#
+#      (kids + contents).compact.each do |k|
+#        o = @document.objs[k]
+#        return o if o && block.call(o)
+#      end
+#
+#      nil
+#    end
 
-      return self if block.call(self)
+    def add_free_text(x, y, text, font, size)
 
-      (kids + contents).compact.each do |k|
-        o = @document.objs[k]
-        return o if o && block.call(o)
-      end
+      fail ArgumentError.new('target is not a page') unless type == '/Page'
 
-      nil
+      o = self.replicate
+
+      pp o.source.split("\n")
     end
   end
 end
