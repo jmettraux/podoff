@@ -77,7 +77,6 @@ module Podoff
       end
     end
 
-    def fonts; @objs.values.select(&:is_font?); end
     def pages; @objs.values.select(&:is_page?); end
 
     def page(i)
@@ -163,59 +162,60 @@ module Podoff
       end
     end
 
-    def lines
+#    def lines
+#
+#      @lines ||= @document.source[@start_index, @end_index].split("\n")
+#    end
 
-      @lines ||= @document.source[@start_index, @end_index].split("\n")
-    end
+#    def lookup(k)
+#
+#      #p [ @ref, lines.size ]
+#
+#      lines.each do |l|
+#
+#        m = l.match(/^\/#{k} (.*)$/)
+#        return m[1] if m
+#      end
+#
+#      nil
+#    end
 
-    def lookup(k)
-
-      #p [ @ref, lines.size ]
-
-      lines.each do |l|
-
-        m = l.match(/^\/#{k} (.*)$/)
-        return m[1] if m
-      end
-
-      nil
-    end
-
-    def index(o, start=0)
-
-      lines[start..-1].each_with_index do |l, i|
-
-        if o.is_a?(String)
-          return start + i if l == o
-        else
-          return start + i if l.match(o)
-        end
-      end
-
-      nil
-    end
+#    def index(o, start=0)
+#
+#      lines[start..-1].each_with_index do |l, i|
+#
+#        if o.is_a?(String)
+#          return start + i if l == o
+#        else
+#          return start + i if l.match(o)
+#        end
+#      end
+#
+#      nil
+#    end
 
     def type
 
-      t = lookup('Type')
-      t ? t[1..-1] : nil
+      #t = lookup('Type')
+      #t ? t[1..-1] : nil
+      nil
     end
 
-    def page_number
-
-      r = lookup('pdftk_PageNum')
-      r ? r.to_i : nil
-    end
+#    def page_number
+#
+#      r = lookup('pdftk_PageNum')
+#      r ? r.to_i : nil
+#    end
 
     def is_page?
 
       page_number != nil
     end
 
-    def is_font?
-
-      type() == 'Font'
-    end
+#    def is_font?
+#
+#      type() == 'Font'
+#    end
 
     def parent
 
@@ -240,31 +240,14 @@ module Podoff
       (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
     end
 
-    def font_names
-
-      @lines.inject(nil) do |names, l|
-
-        if names
-          return names if l == '>>'
-          if m = l.match(/\/([^ ]+) /); names << m[1]; end
-        elsif l.match(/\/Font\s*$/)
-          names = []
-        end
-
-        names
-      end
-
-      []
-    end
-
-    def dup(new_doc)
-
-      o0 = self
-      o = o0.class.new(new_doc, @ref)
-      o.instance_eval { @lines = o0.lines.dup }
-
-      o
-    end
+#    def dup(new_doc)
+#
+#      o0 = self
+#      o = o0.class.new(new_doc, @ref)
+#      o.instance_eval { @lines = o0.lines.dup }
+#
+#      o
+#    end
 
     def find(opts={}, &block)
 
@@ -278,19 +261,19 @@ module Podoff
       nil
     end
 
-    def crop_box
-
-      r = lookup('CropBox') || lookup('MediaBox')
-
-      r ? r.strip[1..-2].split(' ').collect(&:strip).collect(&:to_f) : nil
-    end
-
-    def crop_dims
-
-      x, y, w, h = crop_box
-
-      x ? [ w - x, h - y ] : nil
-    end
+#    def crop_box
+#
+#      r = lookup('CropBox') || lookup('MediaBox')
+#
+#      r ? r.strip[1..-2].split(' ').collect(&:strip).collect(&:to_f) : nil
+#    end
+#
+#    def crop_dims
+#
+#      x, y, w, h = crop_box
+#
+#      x ? [ w - x, h - y ] : nil
+#    end
   end
 end
 

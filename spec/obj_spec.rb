@@ -139,109 +139,97 @@ endobj
     end
   end
 
-  describe '#font_names' do
+#  describe '#index' do
+#
+#    it 'returns the for a given line' do
+#
+#      o = @d.objs['3 0']
+#
+#      expect(o.index('stream')).to eq(4)
+#      expect(o.index('BT')).to eq(14)
+#    end
+#
+#    it 'returns nil when it doesn\'t find' do
+#
+#      o = @d.objs['3 0']
+#
+#      expect(o.index('nada')).to eq(nil)
+#    end
+#
+#    it 'accepts regexes' do
+#
+#      o = @d.objs['1 0']
+#
+#      i = o.index(/^\/B.+Box /)
+#
+#      expect(i).to eq(40)
+#      expect(o.lines[i]).to eq('/BleedBox [0.0 0.0 612.0 792.0]')
+#    end
+#
+#    it 'accepts a start index' do
+#
+#      o = @d.objs['1 0']
+#
+#      i = o.index(/^\/.+Box /, 3)
+#
+#      expect(i).to eq(5)
+#      expect(o.lines[i]).to eq('/TrimBox [0.0 0.0 612.0 792.0]')
+#    end
+#  end
 
-    it 'returns a list of font names visible in this obj' do
+#  describe '#find' do
+#
+#    it 'returns the first sub obj that matches the given block' do
+#
+#      o = @d.objs['1 0']
+#
+#      o1 = o.find { |o| o.index('stream') }
+#
+#      expect(o1).not_to eq(nil)
+#      expect(o1.lines.first).to eq('3 0 obj ')
+#    end
+#
+#    it 'accept a :skip_root option'
+#  end
+#
+#  describe '#gather' do
+#
+#    it 'returns a list of sub obj that match the given block'
+#    it 'accept a :skip_root option'
+#  end
 
-      expect(
-        @d.objs.values.first.font_names
-      ).to eq(%w[
-        C2_0 TT2 TT1 TT0 C2_2 C2_1 Helv
-      ])
-    end
-  end
-
-  describe '#index' do
-
-    it 'returns the for a given line' do
-
-      o = @d.objs['3 0']
-
-      expect(o.index('stream')).to eq(4)
-      expect(o.index('BT')).to eq(14)
-    end
-
-    it 'returns nil when it doesn\'t find' do
-
-      o = @d.objs['3 0']
-
-      expect(o.index('nada')).to eq(nil)
-    end
-
-    it 'accepts regexes' do
-
-      o = @d.objs['1 0']
-
-      i = o.index(/^\/B.+Box /)
-
-      expect(i).to eq(40)
-      expect(o.lines[i]).to eq('/BleedBox [0.0 0.0 612.0 792.0]')
-    end
-
-    it 'accepts a start index' do
-
-      o = @d.objs['1 0']
-
-      i = o.index(/^\/.+Box /, 3)
-
-      expect(i).to eq(5)
-      expect(o.lines[i]).to eq('/TrimBox [0.0 0.0 612.0 792.0]')
-    end
-  end
-
-  describe '#find' do
-
-    it 'returns the first sub obj that matches the given block' do
-
-      o = @d.objs['1 0']
-
-      o1 = o.find { |o| o.index('stream') }
-
-      expect(o1).not_to eq(nil)
-      expect(o1.lines.first).to eq('3 0 obj ')
-    end
-
-    it 'accept a :skip_root option'
-  end
-
-  describe '#gather' do
-
-    it 'returns a list of sub obj that match the given block'
-    it 'accept a :skip_root option'
-  end
-
-  describe '#crop_box' do
-
-    it 'returns the [ x, y, w, h ] box for the obj' do
-
-      o = @d.objs['1 0']
-
-      expect(o.crop_box).to eq([ 0.0, 0.0, 612.0, 792.0 ])
-    end
-
-    it 'defaults to the MediaBox' do
-
-      o = @d.objs['16 0']
-
-      expect(o.crop_box).to eq([ 0.0, 0.0, 612.0, 792.0 ])
-    end
-  end
-
-  describe '#crop_dims' do
-
-    it 'returns [ w, h ]' do
-
-      o = @d.objs['1 0']
-
-      expect(o.crop_dims).to eq([ 612.0, 792.0 ])
-    end
-
-    it 'defaults to the MediaBox' do
-
-      o = @d.objs['16 0']
-
-      expect(o.crop_dims).to eq([ 612.0, 792.0 ])
-    end
-  end
+#  describe '#crop_box' do
+#
+#    it 'returns the [ x, y, w, h ] box for the obj' do
+#
+#      o = @d.objs['1 0']
+#
+#      expect(o.crop_box).to eq([ 0.0, 0.0, 612.0, 792.0 ])
+#    end
+#
+#    it 'defaults to the MediaBox' do
+#
+#      o = @d.objs['16 0']
+#
+#      expect(o.crop_box).to eq([ 0.0, 0.0, 612.0, 792.0 ])
+#    end
+#  end
+#
+#  describe '#crop_dims' do
+#
+#    it 'returns [ w, h ]' do
+#
+#      o = @d.objs['1 0']
+#
+#      expect(o.crop_dims).to eq([ 612.0, 792.0 ])
+#    end
+#
+#    it 'defaults to the MediaBox' do
+#
+#      o = @d.objs['16 0']
+#
+#      expect(o.crop_dims).to eq([ 612.0, 792.0 ])
+#    end
+#  end
 end
 
