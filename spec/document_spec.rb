@@ -56,10 +56,24 @@ describe Podoff::Document do
       d = Podoff::Document.load('pdfs/t2.pdf')
 
       expect(d.page(1).ref).to eq('3 0')
+      expect(d.page(1).page_number).to eq(nil)
 
-      expect(d.page(-1)).to eq(nil)
       expect(d.page(0)).to eq(nil)
       expect(d.page(2)).to eq(nil)
+    end
+
+    it 'returns pages from the last when the index is negative' do
+
+      expect(@d.page(-1).ref).to eq('33 0')
+      expect(@d.page(-1).page_number).to eq(3)
+    end
+
+    it 'returns pages from the last when the index is negative (no PageNum)' do
+
+      d = Podoff::Document.load('pdfs/t2.pdf')
+
+      expect(d.page(-1).ref).to eq('3 0')
+      expect(d.page(-1).page_number).to eq(nil)
     end
   end
 

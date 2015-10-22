@@ -102,14 +102,21 @@ module Podoff
 
     def page(index)
 
+      return nil if index == 0
+
       pas = pages
       return nil if pas.empty?
 
-      if pas.first.attributes[:pagenum]
-        pas.find { |pa| pa.page_number == index }
-      else
-        pas.at(index - 1)
+      return (
+        index > 0 ? pas.at(index - 1) : pas.at(index)
+      ) unless pas.first.attributes[:pagenum]
+
+      if index < 0
+        max = pas.inject(0) { |n, pa| [ n, pa.page_number ].max }
+        index = max + 1 + index
       end
+
+      pas.find { |pa| pa.page_number == index }
     end
 
     def write(path)
