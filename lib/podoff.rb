@@ -170,6 +170,39 @@ module Podoff
 
       @objs[obj.ref] = obj
       @additions[obj.ref] = obj
+
+      obj
+    end
+
+    def add_base_font(name)
+
+      ref = new_ref
+
+      add(
+        Obj.create(
+          self,
+          ref,
+          [
+            "#{ref} obj",
+            "<< /Type /Font /Subtype /Type1 /BaseFont /#{name} >>",
+            "endobj"
+          ].join(' ')))
+    end
+
+    def add_stream(s)
+
+      ref = new_ref
+
+      add(
+        Obj.create(
+          self,
+          ref,
+          [
+            "#{ref} obj",
+            "<< /Length #{s.length} >>",
+            "stream\n#{s}\nendstream",
+            "endobj"
+          ].join("\n")))
     end
 
     def write(path)
@@ -347,7 +380,7 @@ module Podoff
         ">>",
         "endobj"
       ].join("\n")
-      anno = self.class.create(document, nref, s)
+      anno = Obj.create(document, nref, s)
 
       page = self.replicate
       page.add_annotation(nref)
@@ -356,6 +389,41 @@ module Podoff
       document.add(page)
 
       anno
+    end
+
+    def concat(refs, ref)
+
+      refs = refs.strip
+      refs = refs[1..-2] if refs[0] == '['
+
+      "[#{refs} #{ref} R]"
+    end
+
+    def add_to_attribute(key, ref)
+
+      fail ArgumentError.new("obj not replicated") unless @source
+
+      pkey = OBJ_ATTRIBUTES[key]
+
+      if v = @attributes[key]
+        v = concat(v, ref)
+        @source = @source.gsub(/#{pkey} ([\[\]0-9 R]+)/, "#{pkey} #{v}")
+      else
+        i = @source.index('/Type ')
+        @source.insert(i, "/#{pkey} [#{ref} R]\n")
+      end
+      recompute_attributes
+    end
+
+    def insert_content(obj)
+
+      fail ArgumentError.new('target doesn\'t have /Contents') \
+        unless @attributes[:contents]
+
+      o = self.replicate
+      o.add_to_attribute(:contents, obj.ref)
+
+      document.add(o)
     end
   end
 end
