@@ -112,5 +112,32 @@ describe Podoff::Document do
       expect(d.root).to eq('65 0')
     end
   end
+
+  context 'additions' do
+
+    before :each do
+
+      @d = Podoff.load('pdfs/t0.pdf')
+    end
+
+    describe '#add_base_font' do
+
+      it 'adds a new /Font obj to the document' do
+
+        fo = @d.add_base_font('Helvetica')
+
+        expect(fo.ref).to eq('7 0')
+
+        expect(fo.source).to eq(
+          '7 0 obj ' +
+          '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj')
+
+        s = @d.write(:string)
+        d = Podoff.parse(s)
+
+        expect(d.xref).to eq(682)
+      end
+    end
+  end
 end
 

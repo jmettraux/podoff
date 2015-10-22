@@ -33,6 +33,11 @@ module Podoff
     Podoff::Document.load(path, encoding)
   end
 
+  def self.parse(s)
+
+    Podoff::Document.new(s)
+  end
+
   OBJ_ATTRIBUTES =
     { type: 'Type', subtype: 'Subtype',
       parent: 'Parent', kids: 'Kids', contents: 'Contents', annots: 'Annots',
@@ -43,6 +48,11 @@ module Podoff
     def self.load(path, encoding='iso-8859-1')
 
       Podoff::Document.new(File.open(path, 'r:' + encoding) { |f| f.read })
+    end
+
+    def self.parse(s)
+
+      Podoff::Document.new(s)
     end
 
     attr_reader :source
@@ -207,42 +217,45 @@ module Podoff
 
     def write(path)
 
-      File.open(path, 'wb') do |f|
+      f = (path == :string) ? StringIO.new : File.open(path, 'wb')
 
-        f.write(@source)
+      f.write(@source)
 
-        if @additions.any?
+      if @additions.any?
 
-          pointers = {}
+        pointers = {}
 
-          @additions.values.each do |o|
-            f.write("\n")
-            pointers[o.ref] = f.pos + 1
-            f.write(o.source)
-          end
-          f.write("\n\n")
-
-          xref = f.pos + 1
-
-          f.write("xref\n")
-          f.write("0 1\n")
-          f.write("0000000000 65535 f\n")
-
-          pointers.each do |k, v|
-            f.write("#{k.split(' ').first} 1\n")
-            f.write(sprintf("%010d 00000 n\n", v))
-          end
-
-          f.write("trailer\n")
-          f.write("<<\n")
-          f.write("/Prev #{self.xref}\n")
-          f.write("/Size #{objs.size}\n")
-          f.write("/Root #{root} R\n")
-          f.write(">>\n")
-          f.write("startxref #{xref}\n")
-          f.write("%%EOF\n")
+        @additions.values.each do |o|
+          f.write("\n")
+          pointers[o.ref] = f.pos + 1
+          f.write(o.source)
         end
+        f.write("\n\n")
+
+        xref = f.pos + 1
+
+        f.write("xref\n")
+        f.write("0 1\n")
+        f.write("0000000000 65535 f\n")
+
+        pointers.each do |k, v|
+          f.write("#{k.split(' ').first} 1\n")
+          f.write(sprintf("%010d 00000 n\n", v))
+        end
+
+        f.write("trailer\n")
+        f.write("<<\n")
+        f.write("/Prev #{self.xref}\n")
+        f.write("/Size #{objs.size}\n")
+        f.write("/Root #{root} R\n")
+        f.write(">>\n")
+        f.write("startxref #{xref}\n")
+        f.write("%%EOF\n")
       end
+
+      f.close
+
+      path == :string ? f.string : nil
     end
   end
 
