@@ -505,6 +505,11 @@ module Podoff
       @content.write " ET"
     end
 
+    def write(text)
+
+      @content.write(text)
+    end
+
     def to_s
 
       @content.string

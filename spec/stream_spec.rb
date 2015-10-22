@@ -46,5 +46,22 @@ BT /ZapfDingbats 21 Tf 10 50 Td (zapfesque) Tj ET
       expect(st.to_s).to eq('BT 10 20 Td (hello\(\)world) Tj ET')
     end
   end
+
+  describe '#write' do
+
+    it 'injects text into the stream' do
+
+      st = Podoff::Stream.new
+      st.bt(10, 20, 'abc')
+      st.write("\nBT 25 35 Td (ABC) Tj ET")
+      st.bt(30, 40, 'def')
+
+      expect(st.to_s).to eq(%{
+BT 10 20 Td (abc) Tj ET
+BT 25 35 Td (ABC) Tj ET
+BT 30 40 Td (def) Tj ET
+      }.strip)
+    end
+  end
 end
 
