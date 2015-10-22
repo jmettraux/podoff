@@ -30,8 +30,7 @@ module Podoff
 
   def self.load(path)
 
-    Podoff::Document.new(
-      File.open(path, 'r:iso8859-1') { |f| f.read })
+    Podoff::Document.load(path)
   end
 
   OBJ_ATTRIBUTES =
@@ -40,6 +39,12 @@ module Podoff
       pagenum: 'pdftk_PageNum' }
 
   class Document
+
+    def self.load(path)
+
+      Podoff::Document.new(
+        File.open(path, 'r:iso8859-1') { |f| f.read })
+    end
 
     attr_reader :source
     attr_reader :xref

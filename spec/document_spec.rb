@@ -53,7 +53,7 @@ describe Podoff::Document do
 
     it 'returns the page, even for a doc without pdftk_PageNum' do
 
-      d = Podoff.load('pdfs/t2.pdf')
+      d = Podoff::Document.load('pdfs/t2.pdf')
 
       expect(d.page(1).ref).to eq('3 0')
 
