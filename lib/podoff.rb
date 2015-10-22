@@ -217,9 +217,13 @@ module Podoff
           ].join("\n")))
     end
 
-    def re_add(obj)
+    def re_add(obj_or_ref)
 
-      add(obj.replicate)
+      obj = obj_or_ref.is_a?(String) ? @objs[obj_or_ref] : obj_or_ref
+
+      obj = obj.replicate unless obj.replica?
+
+      add(obj)
     end
 
     def write(path)
@@ -332,7 +336,7 @@ module Podoff
       @source || @document.source[@start_index..@end_index]
     end
 
-    def addition?
+    def replica?
 
       @source != nil
     end
@@ -437,21 +441,25 @@ module Podoff
 
     def add_to_fonts(nick, ref)
 
-      fail ArgumentError.new("obj not replicated") unless @source
+      fail ArgumentError.new("target '#{ref}' not a replica") \
+        unless @source
 
       @source = @source.gsub(/\/Font\s*<</, "/Font\n<<\n/#{nick} #{ref} R")
     end
 
-    def insert_content(obj)
+    def insert_contents(obj_or_ref)
 
-      fail ArgumentError.new('target doesn\'t have /Contents') \
+      fail ArgumentError.new("target '#{ref}' not a replica") \
+        unless @source
+      fail ArgumentError.new("target '#{ref}' doesn't have /Contents") \
         unless @attributes[:contents]
 
-      o = self.replicate
-      o.add_to_attribute(:contents, obj.ref)
+      ref = obj_or_ref
+      ref = ref.ref if ref.respond_to?(:ref)
 
-      document.add(o)
+      add_to_attribute(:contents, ref)
     end
+    alias :insert_content :insert_contents
   end
 end
 

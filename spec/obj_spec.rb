@@ -138,5 +138,36 @@ endobj
       expect(@d.objs['224 0'].contents).to eq([])
     end
   end
+
+  context 'insertions' do
+
+    describe '#insert_contents' do
+
+      it 'fails if the target hasn\'t been replicated' do
+
+        expect {
+          @d.objs['23 0'].insert_contents('-1 0')
+        }.to raise_error(ArgumentError, "target '23 0' not a replica")
+      end
+
+      it 'fails if the target doesn\'t have /Contents' do
+
+        expect {
+          ta = @d.re_add('23 0')
+          ta.insert_contents('-1 0')
+        }.to raise_error(ArgumentError, "target '23 0' not a replica")
+      end
+
+      it 'accepts an obj'
+      it 'accepts an obj ref'
+    end
+
+    describe '#insert_font' do
+
+      it 'fails if the target hasn\'t been replicated'
+      it 'accepts name, obj'
+      it 'accepts name, obj ref'
+    end
+  end
 end
 
