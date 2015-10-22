@@ -220,20 +220,6 @@ module Podoff
       @source != nil
     end
 
-#    def match(regex)
-#
-#      source.match(regex)
-#    end
-#
-#    def dmatch(regex)
-#
-#      if m = @document.source.match(regex, @start_index)
-#        m.offset(0).last > @end_index ? nil : m
-#      else
-#        nil
-#      end
-#    end
-
     def type; @attributes[:type]; end
 
     def page_number
@@ -264,18 +250,6 @@ module Podoff
       r = @attributes[:contents]
       (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
     end
-
-#    def find(opts={}, &block)
-#
-#      return self if block.call(self)
-#
-#      (kids + contents).compact.each do |k|
-#        o = @document.objs[k]
-#        return o if o && block.call(o)
-#      end
-#
-#      nil
-#    end
 
     def add_free_text(x, y, text, font, size)
 
