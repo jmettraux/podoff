@@ -353,43 +353,43 @@ module Podoff
         end
     end
 
-    def add_annotation(ref)
+#    def add_annotation(ref)
+#
+#      if annots = @attributes[:annots]
+#        fail "implement me!"
+#      else
+#        i = @source.index('/Type ')
+#        @source.insert(i, "/Annots [#{ref} R]\n")
+#      end
+#      recompute_attributes
+#    end
 
-      if annots = @attributes[:annots]
-        fail "implement me!"
-      else
-        i = @source.index('/Type ')
-        @source.insert(i, "/Annots [#{ref} R]\n")
-      end
-      recompute_attributes
-    end
-
-    def add_free_text(x, y, text, font, size)
-
-      fail ArgumentError.new('target is not a page') unless type == '/Page'
-
-      nref = document.new_ref
-
-      s = [
-        "#{nref} obj <<",
-        "/Type /Annot",
-        "/Subtype /FreeText",
-        "/Da (/F1 70 Tf 0 100 Td)",
-        "/Rect [0 0 500 600]",
-        "/Contents (#{text})",
-        ">>",
-        "endobj"
-      ].join("\n")
-      anno = Obj.create(document, nref, s)
-
-      page = self.replicate
-      page.add_annotation(nref)
-
-      document.add(anno)
-      document.add(page)
-
-      anno
-    end
+#    def add_free_text(x, y, text, font, size)
+#
+#      fail ArgumentError.new('target is not a page') unless type == '/Page'
+#
+#      nref = document.new_ref
+#
+#      s = [
+#        "#{nref} obj <<",
+#        "/Type /Annot",
+#        "/Subtype /FreeText",
+#        "/Da (/F1 70 Tf 0 100 Td)",
+#        "/Rect [0 0 500 600]",
+#        "/Contents (#{text})",
+#        ">>",
+#        "endobj"
+#      ].join("\n")
+#      anno = Obj.create(document, nref, s)
+#
+#      page = self.replicate
+#      page.add_annotation(nref)
+#
+#      document.add(anno)
+#      document.add(page)
+#
+#      anno
+#    end
 
     def concat(refs, ref)
 
