@@ -1,6 +1,9 @@
 
 # podoff
 
+[![Build Status](https://secure.travis-ci.org/jmettraux/podoff.png)](http://travis-ci.org/jmettraux/podoff)
+[![Gem Version](https://badge.fury.io/rb/podoff.png)](http://badge.fury.io/rb/podoff)
+
 A Ruby tool to deface PDF documents.
 
 If you're looking for serious libraries, look at
