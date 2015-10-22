@@ -141,6 +141,11 @@ endobj
 
   context 'insertions' do
 
+    before :each do
+
+      @d = Podoff.load('pdfs/udocument0.pdf')
+    end
+
     describe '#insert_contents' do
 
       it 'fails if the target hasn\'t been replicated' do
@@ -155,11 +160,30 @@ endobj
         expect {
           ta = @d.re_add('23 0')
           ta.insert_contents('-1 0')
-        }.to raise_error(ArgumentError, "target '23 0' not a replica")
+        }.to raise_error(ArgumentError, "target '23 0' doesn't have /Contents")
       end
 
-      it 'accepts an obj'
-      it 'accepts an obj ref'
+      it 'accepts an obj' do
+
+        pa = @d.re_add(@d.page(1))
+
+        st = @d.add_stream('BT 70 80 Td /Font0 35 Tf (content is king!) Tj ET')
+
+        pa.insert_contents(st)
+
+        expect(pa.source).to match(/\/Contents \[3 0 R #{st.ref} R\]\n/)
+      end
+
+      it 'accepts an obj ref' do
+
+        pa = @d.re_add(@d.page(1))
+
+        st = @d.add_stream('BT 70 80 Td /Font0 35 Tf (content is king!) Tj ET')
+
+        pa.insert_contents(st.ref)
+
+        expect(pa.source).to match(/\/Contents \[3 0 R #{st.ref} R\]\n/)
+      end
     end
 
     describe '#insert_font' do
