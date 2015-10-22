@@ -36,8 +36,8 @@ module Podoff
 
   OBJ_ATTRIBUTES =
     { type: 'Type', subtype: 'Subtype',
-      parent: 'Parent', kids: 'Kids', contents: 'Contents',
-      annots: 'Annots' }
+      parent: 'Parent', kids: 'Kids', contents: 'Contents', annots: 'Annots',
+      pagenum: 'pdftk_PageNum' }
 
   class Document
 
