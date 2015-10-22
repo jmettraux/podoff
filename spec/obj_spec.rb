@@ -42,11 +42,29 @@ endobj
 
       o = @d.objs['1 0']
 
-      expect(1).to eq(2)
+      m = o.match(/\/Contents ([^\n]+)/)
+
+      expect(m).not_to eq(nil)
+      expect(m[1]).to eq('3 0 R')
     end
 
-    it 'returns nil if the match exits the obj'
-    it 'returns nil if there is no match'
+    it 'returns nil if the match exits the obj' do
+
+      o = @d.objs['1 0']
+
+      m = o.match(/3 0 obj/)
+
+      expect(m).to eq(nil)
+    end
+
+    it 'returns nil if there is no match' do
+
+      o = @d.objs['1 0']
+
+      m = o.match(/nada/)
+
+      expect(m).to eq(nil)
+    end
   end
 
   describe '#type' do
