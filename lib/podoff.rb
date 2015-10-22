@@ -217,6 +217,11 @@ module Podoff
           ].join("\n")))
     end
 
+    def re_add(obj)
+
+      add(obj.replicate)
+    end
+
     def write(path)
 
       f = (path == :string) ? StringIO.new : File.open(path, 'wb')

@@ -126,6 +126,11 @@ describe Podoff::Document do
 
         fo = @d.add_base_font('Helvetica')
 
+        expect(@d.additions.size).to eq(1)
+        expect(@d.objs.keys).to eq((1..7).map { |i| "#{i} 0" })
+        expect(@d.additions.keys).to eq([ '7 0' ])
+
+        expect(fo.document).to eq(@d)
         expect(fo.ref).to eq('7 0')
 
         expect(fo.source).to eq(
@@ -142,6 +147,11 @@ describe Podoff::Document do
 
         fo = @d.add_base_font('/Helvetica')
 
+        expect(@d.additions.size).to eq(1)
+        expect(@d.objs.keys).to eq((1..7).map { |i| "#{i} 0" })
+        expect(@d.additions.keys).to eq([ '7 0' ])
+
+        expect(fo.document).to eq(@d)
         expect(fo.ref).to eq('7 0')
 
         expect(fo.source).to eq(
@@ -156,6 +166,11 @@ describe Podoff::Document do
 
         st = @d.add_stream('BT 70 80 Td /Helvetica 35 Tf (Hello!) Tj ET')
 
+        expect(@d.additions.size).to eq(1)
+        expect(@d.objs.keys).to eq((1..7).map { |i| "#{i} 0" })
+        expect(@d.additions.keys).to eq([ '7 0' ])
+
+        expect(st.document).to eq(@d)
         expect(st.ref).to eq('7 0')
 
         expect(st.source).to eq(%{
@@ -170,6 +185,24 @@ endobj
         d = Podoff.parse(@d.write(:string))
 
         expect(d.xref).to eq(705)
+      end
+    end
+
+    describe '#re_add' do
+
+      it 'replicates an obj and adds the replica to the document' do
+
+        pa = @d.page(1)
+        re = @d.re_add(pa)
+
+        expect(@d.additions.size).to eq(1)
+        expect(@d.objs.keys).to eq((1..6).map { |i| "#{i} 0" })
+        expect(@d.additions.keys).to eq([ '3 0' ])
+
+        expect(re.document).to eq(@d)
+        expect(re.ref).to eq(pa.ref)
+        expect(re.source).to eq(pa.source)
+        expect(re.source).not_to equal(pa.source)
       end
     end
   end
