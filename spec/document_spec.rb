@@ -186,6 +186,33 @@ endobj
 
         expect(d.xref).to eq(705)
       end
+
+      it 'accepts a block' do
+
+        st =
+          @d.add_stream {
+            tf '/Helvetica', 35
+            bt 10, 20, 'thirty here'
+            bt 40, 50, 'sixty there'
+          }
+
+        expect(st.document).to eq(@d)
+        expect(st.ref).to eq('7 0')
+
+        expect(st.source).to eq(%{
+7 0 obj
+<< /Length 97 >>
+stream
+BT /Helvetica 35 Tf 10 20 Td (thirty here) Tj ET
+BT /Helvetica 35 Tf 40 50 Td (sixty there) Tj ET
+endstream
+endobj
+        }.strip)
+
+        d = Podoff.parse(@d.write(:string))
+
+        expect(d.xref).to eq(759)
+      end
     end
 
     describe '#re_add' do

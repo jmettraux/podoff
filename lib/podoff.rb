@@ -201,9 +201,11 @@ module Podoff
           ].join(' ')))
     end
 
-    def add_stream(s)
+    def add_stream(s=nil, &block)
 
       ref = new_ref
+
+      s = s || make_stream(&block)
 
       add(
         Obj.create(
@@ -267,6 +269,16 @@ module Podoff
       f.close
 
       path == :string ? f.string : nil
+    end
+
+    private
+
+    def make_stream(&block)
+
+      s = Stream.new
+      s.instance_exec(&block)
+
+      s.to_s
     end
   end
 
@@ -367,16 +379,6 @@ module Podoff
       (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
     end
 
-    def recompute_attributes
-
-      @attributes =
-        OBJ_ATTRIBUTES.inject({}) do |h, (k, v)|
-          m = @source.match(/\/#{v} (\/?[^\/\n<>]+)/)
-          h[k] = m[1] if m
-          h
-        end
-    end
-
 #    def add_annotation(ref)
 #
 #      if annots = @attributes[:annots]
@@ -415,30 +417,6 @@ module Podoff
 #      anno
 #    end
 
-    def concat(refs, ref)
-
-      refs = refs.strip
-      refs = refs[1..-2] if refs[0] == '['
-
-      "[#{refs} #{ref} R]"
-    end
-
-    def add_to_attribute(key, ref)
-
-      fail ArgumentError.new("obj not replicated") unless @source
-
-      pkey = OBJ_ATTRIBUTES[key]
-
-      if v = @attributes[key]
-        v = concat(v, ref)
-        @source = @source.gsub(/#{pkey} ([\[\]0-9 R]+)/, "#{pkey} #{v}")
-      else
-        i = @source.index('/Type ')
-        @source.insert(i, "/#{pkey} [#{ref} R]\n")
-      end
-      recompute_attributes
-    end
-
     def insert_font(nick, obj_or_ref)
 
       fail ArgumentError.new("target '#{ref}' not a replica") \
@@ -465,6 +443,74 @@ module Podoff
       add_to_attribute(:contents, re)
     end
     alias :insert_content :insert_contents
+
+    protected
+
+    def recompute_attributes
+
+      @attributes =
+        OBJ_ATTRIBUTES.inject({}) do |h, (k, v)|
+          m = @source.match(/\/#{v} (\/?[^\/\n<>]+)/)
+          h[k] = m[1] if m
+          h
+        end
+    end
+
+    def concat(refs, ref)
+
+      refs = refs.strip
+      refs = refs[1..-2] if refs[0] == '['
+
+      "[#{refs} #{ref} R]"
+    end
+
+    def add_to_attribute(key, ref)
+
+      fail ArgumentError.new("obj not replicated") unless @source
+
+      pkey = OBJ_ATTRIBUTES[key]
+
+      if v = @attributes[key]
+        v = concat(v, ref)
+        @source = @source.gsub(/#{pkey} ([\[\]0-9 R]+)/, "#{pkey} #{v}")
+      else
+        i = @source.index('/Type ')
+        @source.insert(i, "/#{pkey} [#{ref} R]\n")
+      end
+      recompute_attributes
+    end
+  end
+
+  class Stream
+
+    def initialize
+
+      @font = nil
+      @content = StringIO.new
+    end
+
+    def tf(font_name, font_size)
+
+      n = font_name[0] == '/' ? font_name[1..-1] : font_name
+
+      @font = "/#{n} #{font_size} Tf "
+    end
+
+    def bt(x, y, text)
+
+      # TODO escape parentheses
+
+      @content.write "\n" if @content.size > 0
+      @content.write "BT "
+      @content.write @font if @font
+      @content.write "#{x} #{y} Td (#{text}) Tj"
+      @content.write " ET"
+    end
+
+    def to_s
+
+      @content.string
+    end
   end
 end
 
