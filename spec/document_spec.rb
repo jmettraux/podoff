@@ -90,20 +90,22 @@ describe Podoff::Document do
 
   describe '#dup' do
 
-    it 'produces a shallow copy of the document'
-#
-#      d = @d.dup
-#
-#      expect(d.class
-#        ).to eq(Podoff::Document)
-#      expect(d.objs.hash
-#        ).not_to eq(@d.objs.hash)
-#      expect(d.objs.values.first.hash
-#        ).not_to eq(@d.objs.values.first.hash)
-#
-#      expect(d.objs.values.first.document).to eq(d)
-#      expect(@d.objs.values.first.document).to eq(@d)
-#    end
+    it 'produces a shallow copy of the document' do
+
+      d = @d.dup
+
+      expect(d.class).to eq(Podoff::Document)
+      expect(d.hash).not_to eq(@d.hash)
+
+      expect(d.objs.hash).not_to eq(@d.objs.hash)
+
+      expect(d.objs.values.first.hash).not_to eq(@d.objs.values.first.hash)
+      expect(d.objs.values.first.class).to eq(Podoff::Obj)
+      expect(d.objs.values.first.document.class).to eq(Podoff::Document)
+
+      expect(d.objs.values.first.document).to equal(d)
+      expect(@d.objs.values.first.document).to equal(@d)
+    end
   end
 end
 

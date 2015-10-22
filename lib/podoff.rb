@@ -95,6 +95,20 @@ module Podoff
       end
     end
 
+    def dup
+
+      o = self
+
+      self.class.allocate.instance_eval do
+
+        @source = o.source
+        @xref = o.xref
+        @objs = o.objs.inject({}) { |h, (k, v)| h[k] = v.dup(self); h }
+
+        self
+      end
+    end
+
     def pages
 
       @objs.values.select { |o| o.type == '/Page' }
@@ -162,6 +176,23 @@ module Podoff
       @end_index = en
       @attributes = atts
       @addition = addition
+    end
+
+    def dup(new_doc)
+
+      o = self
+
+      d = self.class.allocate.instance_eval do
+
+        @document = new_doc
+        @ref = o.ref
+        @start_index = o.start_index
+        @end_index = o.end_index
+        @attributes = o.attributes.dup
+        @addition = o.addition?
+
+        self
+      end
     end
 
     def addition?; @addition; end
