@@ -40,13 +40,26 @@ describe Podoff::Document do
 
       p = @d.page(1)
       expect(p.class).to eq(Podoff::Obj)
-      expect(p.type).to eq('Page')
+      expect(p.type).to eq('/Page')
+      expect(p.attributes[:pagenum]).to eq('1')
+      expect(p.page_number).to eq(1)
     end
 
     it 'returns nil if the page doesn\'t exist' do
 
       expect(@d.page(0)).to eq(nil)
       expect(@d.page(9)).to eq(nil)
+    end
+
+    it 'returns the page, even for a doc without pdftk_PageNum' do
+
+      d = Podoff.load('pdfs/t2.pdf')
+
+      expect(d.page(1).ref).to eq('3 0')
+
+      expect(d.page(-1)).to eq(nil)
+      expect(d.page(0)).to eq(nil)
+      expect(d.page(2)).to eq(nil)
     end
   end
 

@@ -95,6 +95,18 @@ module Podoff
       @objs.values.select { |o| o.type == '/Page' }
     end
 
+    def page(index)
+
+      pas = pages
+      return nil if pas.empty?
+
+      if pas.first.attributes[:pagenum]
+        pas.find { |pa| pa.page_number == index }
+      else
+        pas.at(index - 1)
+      end
+    end
+
     def write(path)
 
       # TODO
