@@ -44,7 +44,10 @@ describe Podoff do
       puts page.source
       page.add_free_text(100, 100, 'free text', :helvetica, 15)
 
-      expect(doc.objs.size).to eq(8)
+      expect(doc.objs.size).to eq(7)
+      expect(doc.additions.size).to eq(2)
+
+      doc.write('tmp/out.pdf')
     end
   end
 end

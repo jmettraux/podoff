@@ -49,6 +49,7 @@ module Podoff
     attr_reader :xref
     attr_reader :objs
     attr_reader :obj_counters
+    attr_reader :root
     #
     attr_reader :additions
 
@@ -61,7 +62,9 @@ module Podoff
       @xref = nil
       @objs = {}
       @obj_counters = {}
-      @additions = []
+      @root = nil
+
+      @additions = {}
 
       index = 0
       matches = {}
@@ -84,6 +87,9 @@ module Podoff
 
         fail ArgumentError.new('failed to find "startxref"') unless sxrm
 
+        @root = nil if @root && index > @root.offset(0).last
+        @root ||= s.match(/\/Root (\d+ \d+) R\b/, index)
+
         sxri = sxrm.offset(0).first
         obji = objm ? objm.offset(0).first : sxri + 1
 
@@ -98,6 +104,9 @@ module Podoff
           matches.delete(:startxref)
         end
       end
+
+      fail ArgumentError.new('found no /Root') unless @root
+      @root = @root[1]
     end
 
     def updated?
@@ -113,7 +122,13 @@ module Podoff
 
         @source = o.source
         @xref = o.xref
-        @objs = o.objs.inject({}) { |h, (k, v)| h[k] = v.dup(self); h }
+
+        @objs =
+          o.objs.inject({}) { |h, (k, v)| h[k] = v.dup(self); h }
+        @obj_counters =
+          o.obj_counters.dup
+        @additions =
+          o.additions.inject({}) { |h, (k, v)| h[k] = v.dup(self); h }
 
         self
       end
@@ -143,11 +158,50 @@ module Podoff
       pas.find { |pa| pa.page_number == index }
     end
 
+    def new_ref
+
+      "#{
+        @objs.keys.inject(-1) { |i, r| [ i, r.split(' ').first.to_i ].max } + 1
+      } 0"
+    end
+
+    def add(obj)
+
+      @objs[obj.ref] = obj
+      @additions[obj.ref] = obj
+    end
+
     def write(path)
 
-      File.open(path, 'wb') { |f| f.write(@source) }
+      File.open(path, 'wb') do |f|
 
-      fail "implement me!" if updated?
+        f.write(@source)
+
+        if @additions.any?
+
+          pointers = {}
+
+          @additions.values.each do |o|
+            f.write("\n")
+            pointers[o.ref] = f.pos + 1
+            f.write(o.source)
+          end
+          f.write("\n\n")
+
+          xref = f.pos + 1
+
+          f.write("xref\n")
+          f.write("0 1\n")
+          f.write("0000000000 65535 f\n")
+          pointers.each do |k, v|
+            f.write("#{k.split(' ').first} 1\n")
+            f.write("#{v} 00000 n\n")
+          end
+          f.write("trailer\n")
+          f.write("startxref #{xref}\n")
+          f.write("%%EOF\n")
+        end
+      end
     end
   end
 
@@ -188,6 +242,8 @@ module Podoff
       @end_index = en
       @attributes = atts
       @source = source
+
+      recompute_attributes if @source != nil
     end
 
     def dup(new_doc)
@@ -228,11 +284,6 @@ module Podoff
       r ? r.to_i : nil
     end
 
-    def is_page?
-
-      @attributes[:type] == '/Page'
-    end
-
     def parent
 
       r = @attributes[:parent]
@@ -251,13 +302,52 @@ module Podoff
       (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
     end
 
+    def recompute_attributes
+
+      @attributes =
+        OBJ_ATTRIBUTES.inject({}) do |h, (k, v)|
+          m = @source.match(/\/#{v} (\/?[^\/\n<>]+)/)
+          h[k] = m[1] if m
+          h
+        end
+    end
+
+    def add_annotation(ref)
+
+      if annots = @attributes[:annots]
+        fail "implement me!"
+      else
+        i = @source.index('/Type ')
+        @source.insert(i, "/Annots #{ref} R\n")
+      end
+      recompute_attributes
+    end
+
     def add_free_text(x, y, text, font, size)
 
       fail ArgumentError.new('target is not a page') unless type == '/Page'
 
-      o = self.replicate
+      nref = document.new_ref
 
-      pp o.source.split("\n")
+      s = [
+        "#{nref} obj <<",
+        "/Type /Annot",
+        "/Subtype /FreeText",
+        "/Da (/F1 70 Tf 0 100 Td)",
+        "/Rect [0 0 500 600]",
+        "/Contents (#{text})",
+        ">>",
+        "endobj"
+      ].join("\n")
+      anno = self.class.create(document, nref, s)
+
+      page = self.replicate
+      page.add_annotation(nref)
+
+      document.add(anno)
+      document.add(page)
+
+      anno
     end
   end
 end
