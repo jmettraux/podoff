@@ -48,6 +48,7 @@ module Podoff
     attr_reader :source
     attr_reader :xref
     attr_reader :objs
+    attr_reader :obj_counters
     #
     attr_reader :additions
 
@@ -59,6 +60,7 @@ module Podoff
       @source = s
       @xref = nil
       @objs = {}
+      @obj_counters = {}
       @additions = []
 
       index = 0
@@ -88,6 +90,7 @@ module Podoff
         if obji < sxri
           obj = Podoff::Obj.extract(self, matches)
           @objs[obj.ref] = obj
+          @obj_counters[obj.ref] = (@obj_counters[obj.ref] || 0) + 1
           index = obj.end_index + 1
         else
           @xref = sxrm[1].to_i

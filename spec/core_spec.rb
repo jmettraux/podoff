@@ -28,6 +28,11 @@ describe Podoff do
         [ '3 0', 111, 213, { type: '/Page', parent: '2 0 R', contents: '6 0 R' } ])
 
       expect(d.objs.values.first.document).not_to be(nil)
+
+      expect(d.obj_counters.keys).to eq(
+        [ '1 0', '2 0', '3 0', '4 0', '5 0', '6 0' ])
+      expect(d.obj_counters.values).to eq(
+        [ 1, 1, 1, 1, 1, 1 ])
     end
 
     it 'loads a PDF document' do
@@ -48,6 +53,11 @@ describe Podoff do
       expect(d.class).to eq(Podoff::Document)
       expect(d.xref).to eq(698)
       expect(d.objs.keys).to eq([ '1 0', '2 0', '3 0', '4 0', '5 0', '6 0' ])
+
+      expect(d.obj_counters.keys).to eq(
+        [ '1 0', '2 0', '3 0', '4 0', '5 0', '6 0' ])
+      expect(d.obj_counters.values).to eq(
+        [ 1, 1, 1, 1, 1, 2 ])
     end
 
     it 'rejects items that are not PDF documents' do
