@@ -38,7 +38,13 @@ BT /ZapfDingbats 21 Tf 10 50 Td (zapfesque) Tj ET
       expect(st.to_s).to eq('BT 10 20 Td (hello world) Tj ET')
     end
 
-    it 'escapes the text'
+    it 'escapes the text' do
+
+      st = Podoff::Stream.new
+      st.bt(10, 20, 'hello()world')
+
+      expect(st.to_s).to eq('BT 10 20 Td (hello\(\)world) Tj ET')
+    end
   end
 end
 

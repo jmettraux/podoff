@@ -498,18 +498,23 @@ module Podoff
 
     def bt(x, y, text)
 
-      # TODO escape parentheses
-
       @content.write "\n" if @content.size > 0
       @content.write "BT "
       @content.write @font if @font
-      @content.write "#{x} #{y} Td (#{text}) Tj"
+      @content.write "#{x} #{y} Td (#{escape(text)}) Tj"
       @content.write " ET"
     end
 
     def to_s
 
       @content.string
+    end
+
+    protected
+
+    def escape(s)
+
+      s.gsub(/\(/, '\(').gsub(/\)/, '\)')
     end
   end
 end
