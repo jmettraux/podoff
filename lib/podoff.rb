@@ -146,10 +146,15 @@ module Podoff
 
     def source
 
-      @document.source[@start_index..@end_index]
+      @source ||= @document.source[@start_index..@end_index]
     end
 
     def match(regex)
+
+      source.match(regex)
+    end
+
+    def dmatch(regex)
 
       if m = @document.source.match(regex, @start_index)
         m.offset(0).last > @end_index ? nil : m

@@ -46,6 +46,7 @@ endobj
 
       expect(m).not_to eq(nil)
       expect(m[1]).to eq('3 0 R')
+      expect(m.offset(0)).to eq([ 123, 138 ]) # /!\
     end
 
     it 'returns nil if the match exits the obj' do
@@ -64,6 +65,20 @@ endobj
       m = o.match(/nada/)
 
       expect(m).to eq(nil)
+    end
+  end
+
+  describe '#dmatch' do
+
+    it 'matches with the zero offset set to the document' do
+
+      o = @d.objs['1 0']
+
+      m = o.dmatch(/\/Contents ([^\n]+)/)
+
+      expect(m).not_to eq(nil)
+      expect(m[1]).to eq('3 0 R')
+      expect(m.offset(0)).to eq([ 138, 153 ]) # /!\
     end
   end
 
