@@ -23,9 +23,9 @@ describe Podoff do
       #pp d.objs.values.collect(&:to_a)
 
       expect(d.objs['1 0'].to_a).to eq(
-        [ '1 0', 9, 55, { type: '/Catalog' } ])
+        [ '1 0', 9, 54, { type: '/Catalog' } ])
       expect(d.objs['3 0'].to_a).to eq(
-        [ '3 0', 111, 212, { type: '/Page', parent: '2 0 R', contents: '6 0 R' } ])
+        [ '3 0', 111, 211, { type: '/Page', parent: '2 0 R', contents: '6 0 R' } ])
     end
 
     it 'loads a PDF document' do

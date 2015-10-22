@@ -102,7 +102,7 @@ module Podoff
 
       re = matches[:obj][1]
       st = matches[:obj].offset(0).first
-      en = matches[:endobj].offset(0).last
+      en = matches[:endobj].offset(0).last - 1
 
       atts = {}
 
@@ -193,12 +193,7 @@ module Podoff
 #      nil
 #    end
 
-    def type
-
-      #t = lookup('Type')
-      #t ? t[1..-1] : nil
-      nil
-    end
+    def type; @attributes[:type]; end
 
 #    def page_number
 #

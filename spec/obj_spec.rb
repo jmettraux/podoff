@@ -86,7 +86,7 @@ endobj
 
     it 'returns the type of the obj' do
 
-      expect(@d.objs['23 0'].type).to eq('Font')
+      expect(@d.objs['23 0'].type).to eq('/Font')
     end
 
     it 'returns nil if there is no type' do
