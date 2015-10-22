@@ -186,6 +186,8 @@ module Podoff
 
     def add_base_font(name)
 
+      name = name[1..-1] if name[0] == '/'
+
       ref = new_ref
 
       add(

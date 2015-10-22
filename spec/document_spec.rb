@@ -137,6 +137,17 @@ describe Podoff::Document do
 
         expect(d.xref).to eq(682)
       end
+
+      it 'doesn\'t mind a slash in front of the font name' do
+
+        fo = @d.add_base_font('/Helvetica')
+
+        expect(fo.ref).to eq('7 0')
+
+        expect(fo.source).to eq(
+          '7 0 obj ' +
+          '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj')
+      end
     end
   end
 end
