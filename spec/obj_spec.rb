@@ -23,6 +23,32 @@ describe Podoff::Obj do
     end
   end
 
+  describe '#source' do
+
+    it 'returns the source behind the obj' do
+
+      o = @d.objs['20 0']
+
+      expect(o.source).to eq(%{
+20 0 obj [21 0 R]
+endobj
+      }.strip)
+    end
+  end
+
+  describe '#match' do
+
+    it 'returns a MatchData instance if there is a match' do
+
+      o = @d.objs['1 0']
+
+      expect(1).to eq(2)
+    end
+
+    it 'returns nil if the match exits the obj'
+    it 'returns nil if there is no match'
+  end
+
   describe '#type' do
 
     it 'returns the type of the obj' do

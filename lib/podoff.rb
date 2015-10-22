@@ -117,6 +117,18 @@ module Podoff
 
   class Obj
 
+    def self.parse(doc, index)
+
+      ref = doc.source.match(/(\d+ \d+)/, index)[1]
+
+      m = doc.source.match(/\bendobj\b/, index)
+
+      fail ArgumentError.new("failed to find 'endobj' starting #{index}") \
+        unless m
+
+      Podoff::Obj.new(doc, ref, index, m.offset(0).last - 1, false)
+    end
+
     attr_reader :document
     attr_reader :ref
     attr_reader :start_index, :end_index
@@ -132,16 +144,18 @@ module Podoff
 
     def addition?; @addition; end
 
-    def self.parse(doc, index)
+    def source
 
-      ref = doc.source.match(/(\d+ \d+)/, index)[1]
+      @document.source[@start_index..@end_index]
+    end
 
-      m = doc.source.match(/\bendobj\b/, index)
+    def match(regex)
 
-      fail ArgumentError.new("failed to find 'endobj' starting #{index}") \
-        unless m
-
-      Podoff::Obj.new(doc, ref, index, m.offset(0).last, false)
+      if m = @document.source.match(regex, @start_index)
+        m.offset(0).last > @end_index ? nil : m
+      else
+        nil
+      end
     end
 
     def lines
