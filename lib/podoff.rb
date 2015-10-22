@@ -195,28 +195,20 @@ module Podoff
 
     def type; @attributes[:type]; end
 
-#    def page_number
-#
-#      r = lookup('pdftk_PageNum')
-#      r ? r.to_i : nil
-#    end
+    def page_number
+
+      r = @attributes[:pagenum]
+      r ? r.to_i : nil
+    end
 
     def is_page?
 
-      page_number != nil
+      @attributes[:type] == '/Page'
     end
-
-#    def is_font?
-#
-#      type() == 'Font'
-#    end
 
     def parent
 
-      # /Parent 2 0 R
-
-      r = lookup('Parent')
-
+      r = @attributes[:parent]
       r ? r[0..-2].strip : nil
     end
 
