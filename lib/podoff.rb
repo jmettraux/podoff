@@ -121,13 +121,16 @@ module Podoff
     attr_reader :ref
     attr_reader :start_index, :end_index
 
-    def initialize(doc, ref, st, en)
+    def initialize(doc, ref, st, en, addition)
 
       @document = doc
       @ref = ref
       @start_index = st
       @end_index = en
+      @addition = addition
     end
+
+    def addition?; @addition; end
 
     def self.parse(doc, index)
 
@@ -138,7 +141,7 @@ module Podoff
       fail ArgumentError.new("failed to find 'endobj' starting #{index}") \
         unless m
 
-      Podoff::Obj.new(doc, ref, index, m.offset(0).last)
+      Podoff::Obj.new(doc, ref, index, m.offset(0).last, false)
     end
 
     def lines
@@ -147,6 +150,8 @@ module Podoff
     end
 
     def lookup(k)
+
+      #p [ @ref, lines.size ]
 
       lines.each do |l|
 
