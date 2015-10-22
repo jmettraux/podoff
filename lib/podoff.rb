@@ -28,9 +28,9 @@ module Podoff
 
   VERSION = '1.0.0'
 
-  def self.load(path)
+  def self.load(path, encoding='iso-8859-1')
 
-    Podoff::Document.load(path)
+    Podoff::Document.load(path, encoding)
   end
 
   OBJ_ATTRIBUTES =
@@ -40,10 +40,9 @@ module Podoff
 
   class Document
 
-    def self.load(path)
+    def self.load(path, encoding='iso-8859-1')
 
-      Podoff::Document.new(
-        File.open(path, 'r:iso8859-1') { |f| f.read })
+      Podoff::Document.new(File.open(path, 'r:' + encoding) { |f| f.read })
     end
 
     attr_reader :source
@@ -135,7 +134,7 @@ module Podoff
 
     def write(path)
 
-      # TODO
+      File.open(path, 'wb') { |f| f.write(@source) }
     end
   end
 
