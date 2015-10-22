@@ -34,6 +34,11 @@ module Podoff
       File.open(path, 'r:iso8859-1') { |f| f.read })
   end
 
+  OBJ_ATTRIBUTES =
+    { type: 'Type', subtype: 'Subtype',
+      parent: 'Parent', kids: 'Kids', contents: 'Contents',
+      annots: 'Annots' }
+
   class Document
 
     attr_reader :source
@@ -50,98 +55,92 @@ module Podoff
       @objs = {}
 
       index = 0
-      sxrm, sxri = [ nil, nil ]
+      matches = {}
       #
       loop do
 
-        objm = s.match(/^\d+ \d+ obj\b/, index)
-        sxrm ||= s.match(/\bstartxref\b/, index)
+        matches[:obj] ||= s.match(/^(\d+ \d+) obj\b/, index)
+        matches[:endobj] ||= s.match(/\bendobj\b/, index)
+        #
+        OBJ_ATTRIBUTES.each do |k, v|
+          matches[k] ||= s.match(/\/#{v} (\/?[^\/\n<>]+)/, index)
+        end
+        #
+        matches[:startxref] ||= s.match(/\bstartxref\s+(\d+)\s*%%EOF/, index)
+
+        objm = matches[:obj]
+        sxrm = matches[:startxref]
 
         break unless sxrm || objm
 
         fail ArgumentError.new('failed to find "startxref"') unless sxrm
 
-        sxri ||= sxrm.offset(0).first
+        sxri = sxrm.offset(0).first
         obji = objm ? objm.offset(0).first : sxri + 1
 
         if obji < sxri
-          obj = Podoff::Obj.parse(self, obji)
+          obj = Podoff::Obj.extract(self, matches)
           @objs[obj.ref] = obj
-          index = objm.offset(0).last + 1
+          index = obj.end_index + 1
         else
-          m = s.match(/(\d+)\s*%%EOF/, sxrm.offset(0).last + 1)
-          @xref = m[1].to_i
-          index = m.offset(0).last + 1
-          sxrm, sxri = [ nil, nil ]
+          @xref = sxrm[1].to_i
+          index = sxrm.offset(0).last + 1
+          matches.delete(:startxref)
         end
       end
     end
 
-    def pages; @objs.values.select(&:is_page?); end
-
-    def page(i)
-
-      i < 1 ? nil : @objs.values.find { |o| o.page_number == i }
-    end
-
-#    def dup
-#
-#      d0 = self
-#
-#      d = d0.class.allocate
-#
-#      d.instance_eval do
-#        @header = d0.header.dup
-#        @footer = d0.footer.dup
-#        @objs = d0.objs.values.inject({}) { |h, v| h[v.ref] = v.dup(d); h }
-#      end
-#
-#      d
-#    end
-
     def write(path)
 
-#      File.open(path, 'wb') do |f|
-#
-#        @header.each { |l| f.print(l); f.print("\n") }
-#
-#        @objs.values.each do |o|
-#          o.lines.each { |l| f.print(l); f.print("\n") }
-#        end
-#
-#        @footer.each { |l| f.print(l); f.print("\n") }
-#      end
+      # TODO
     end
   end
 
   class Obj
 
-    def self.parse(doc, index)
+    def self.extract(doc, matches)
 
-      ref = doc.source.match(/(\d+ \d+)/, index)[1]
+      re = matches[:obj][1]
+      st = matches[:obj].offset(0).first
+      en = matches[:endobj].offset(0).last
 
-      m = doc.source.match(/\bendobj\b/, index)
+      atts = {}
 
-      fail ArgumentError.new("failed to find 'endobj' starting #{index}") \
-        unless m
+      OBJ_ATTRIBUTES.keys.each do |k|
+        m = matches[k]
+        if m && m.offset(0).last < en
+          atts[k] = m[1].strip
+          matches.delete(k)
+        end
+      end
 
-      Podoff::Obj.new(doc, ref, index, m.offset(0).last - 1, false)
+      matches.delete(:obj)
+      matches.delete(:endobj)
+
+      Podoff::Obj.new(doc, re, st, en, atts, false)
     end
 
     attr_reader :document
     attr_reader :ref
     attr_reader :start_index, :end_index
+    attr_reader :attributes
 
-    def initialize(doc, ref, st, en, addition)
+    def initialize(doc, ref, st, en, atts, addition)
 
       @document = doc
       @ref = ref
       @start_index = st
       @end_index = en
+      @attributes = atts
       @addition = addition
     end
 
     def addition?; @addition; end
+
+    def to_a
+
+      [ @ref, @start_index, @end_index, @attributes ]
+    end
 
     def source
 
