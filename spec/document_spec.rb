@@ -27,24 +27,27 @@ describe Podoff::Document do
 
   describe '#pages' do
 
-    it 'returns the pages'
-    #  expect(@d.pages.size).to eq(3)
-    #  expect(@d.pages.first.class).to eq(Podoff::Obj)
-    #end
+    it 'returns the pages' do
+
+      expect(@d.pages.size).to eq(3)
+      expect(@d.pages.first.class).to eq(Podoff::Obj)
+    end
   end
 
   describe '#page' do
 
-    it 'returns a page given an index (starts at 1)'
-    #  p = @d.page(1)
-    #  expect(p.class).to eq(Podoff::Obj)
-    #  expect(p.type).to eq('Page')
-    #end
+    it 'returns a page given an index (starts at 1)' do
 
-    it 'returns nil if the page doesn\'t exist'
-    #  expect(@d.page(0)).to eq(nil)
-    #  expect(@d.page(9)).to eq(nil)
-    #end
+      p = @d.page(1)
+      expect(p.class).to eq(Podoff::Obj)
+      expect(p.type).to eq('Page')
+    end
+
+    it 'returns nil if the page doesn\'t exist' do
+
+      expect(@d.page(0)).to eq(nil)
+      expect(@d.page(9)).to eq(nil)
+    end
   end
 
   describe '#write' do

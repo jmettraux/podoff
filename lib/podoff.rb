@@ -90,6 +90,11 @@ module Podoff
       end
     end
 
+    def pages
+
+      @objs.values.select { |o| o.type == '/Page' }
+    end
+
     def write(path)
 
       # TODO
