@@ -214,15 +214,13 @@ module Podoff
 
     def kids
 
-      # /Kids [1 0 R 16 0 R 33 0 R]
-
-      r = lookup('Kids')
+      r = @attributes[:kids]
       (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
     end
 
     def contents
 
-      r = lookup('Contents')
+      r = @attributes[:contents]
       (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
     end
 
