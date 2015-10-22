@@ -220,38 +220,6 @@ module Podoff
       end
     end
 
-#    def lines
-#
-#      @lines ||= @document.source[@start_index, @end_index].split("\n")
-#    end
-
-#    def lookup(k)
-#
-#      #p [ @ref, lines.size ]
-#
-#      lines.each do |l|
-#
-#        m = l.match(/^\/#{k} (.*)$/)
-#        return m[1] if m
-#      end
-#
-#      nil
-#    end
-
-#    def index(o, start=0)
-#
-#      lines[start..-1].each_with_index do |l, i|
-#
-#        if o.is_a?(String)
-#          return start + i if l == o
-#        else
-#          return start + i if l.match(o)
-#        end
-#      end
-#
-#      nil
-#    end
-
     def type; @attributes[:type]; end
 
     def page_number
@@ -283,15 +251,6 @@ module Podoff
       (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
     end
 
-#    def dup(new_doc)
-#
-#      o0 = self
-#      o = o0.class.new(new_doc, @ref)
-#      o.instance_eval { @lines = o0.lines.dup }
-#
-#      o
-#    end
-
     def find(opts={}, &block)
 
       return self if block.call(self)
@@ -303,20 +262,6 @@ module Podoff
 
       nil
     end
-
-#    def crop_box
-#
-#      r = lookup('CropBox') || lookup('MediaBox')
-#
-#      r ? r.strip[1..-2].split(' ').collect(&:strip).collect(&:to_f) : nil
-#    end
-#
-#    def crop_dims
-#
-#      x, y, w, h = crop_box
-#
-#      x ? [ w - x, h - y ] : nil
-#    end
   end
 end
 
