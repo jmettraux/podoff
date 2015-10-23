@@ -207,16 +207,16 @@ module Podoff
 
       s = s || make_stream(&block)
 
-      add(
-        Obj.create(
-          self,
-          ref,
-          [
-            "#{ref} obj",
-            "<< /Length #{s.length} >>",
-            "stream\n#{s}\nendstream",
-            "endobj"
-          ].join("\n")))
+      s = [
+        "#{ref} obj",
+        "<< /Length #{s.length} >>",
+        "stream\n#{s}\nendstream",
+        "endobj"
+      ].join("\n") if s.is_a?(String)
+
+      o = add(Obj.create(self, ref, s))
+
+      s.is_a?(Podoff::Stream) ? s : o
     end
 
     def re_add(obj_or_ref)
@@ -241,7 +241,13 @@ module Podoff
         @additions.values.each do |o|
           f.write("\n")
           pointers[o.ref] = f.pos + 1
-          f.write(o.source)
+          if o.source.is_a?(String)
+            f.write(o.source)
+          else # Stream
+            s = o.source.to_s
+            f.write("#{o.ref} obj\n<< /Length #{s.length} >>\n")
+            f.write("stream\n#{s}\nendstream\nendobj")
+          end
         end
         f.write("\n\n")
 
@@ -276,9 +282,9 @@ module Podoff
     def make_stream(&block)
 
       s = Stream.new
-      s.instance_exec(&block)
+      s.instance_exec(&block) if block
 
-      s.to_s
+      s
     end
   end
 
@@ -320,7 +326,8 @@ module Podoff
       @attributes = atts
       @source = source
 
-      recompute_attributes if @source != nil
+      recompute_attributes if @source.is_a?(String)
+      @source.obj = self if @source.is_a?(Podoff::Stream)
     end
 
     def dup(new_doc)
@@ -438,6 +445,7 @@ module Podoff
         unless @attributes[:contents]
 
       re = obj_or_ref
+      re = re.obj if re.respond_to?(:obj) # Stream
       re = re.ref if re.respond_to?(:ref)
 
       add_to_attribute(:contents, re)
@@ -483,11 +491,17 @@ module Podoff
 
   class Stream
 
+    attr_accessor :obj
+
     def initialize
 
       @font = nil
       @content = StringIO.new
     end
+
+    #def document; obj.document; end
+    #def ref; obj.ref; end
+    #def source; self; end
 
     def tf(font_name, font_size)
 

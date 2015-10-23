@@ -89,6 +89,29 @@ describe Podoff::Document do
       expect(lines.first).to match(/^%PDF-1.7$/)
       expect(lines.last).to match(/^%%EOF$/)
     end
+
+    it 'writes open streams as well' do
+
+      d = Podoff.load('pdfs/t0.pdf')
+
+      pa = d.re_add(d.page(1))
+      st = d.add_stream
+      st.bt(10, 20, 'hello open stream')
+      pa.insert_contents(st)
+
+      s = d.write(:string)
+
+      expect(
+        d.write(:string).index(%{
+7 0 obj
+<< /Length 37 >>
+stream
+BT 10 20 Td (hello open stream) Tj ET
+endstream
+endobj
+        }.strip)
+      ).to eq(722)
+    end
   end
 
   describe '#dup' do
@@ -196,22 +219,25 @@ endobj
             bt 40, 50, 'sixty there'
           }
 
-        expect(st.document).to eq(@d)
-        expect(st.ref).to eq('7 0')
+        expect(st.obj.document).to eq(@d)
+        expect(st.obj.ref).to eq('7 0')
 
-        expect(st.source).to eq(%{
-7 0 obj
-<< /Length 97 >>
-stream
+        expect(st.obj.source.to_s).to eq(%{
 BT /Helvetica 35 Tf 10 20 Td (thirty here) Tj ET
 BT /Helvetica 35 Tf 40 50 Td (sixty there) Tj ET
-endstream
-endobj
         }.strip)
 
         d = Podoff.parse(@d.write(:string))
 
+        expect(d.source.index('<< /Length 97 >>')).to eq(618)
         expect(d.xref).to eq(759)
+      end
+
+      it 'returns the open stream when no arg given' do
+
+        st = @d.add_stream
+
+        expect(st.class).to eq(Podoff::Stream)
       end
     end
 
