@@ -68,7 +68,7 @@ module Podoff
     def initialize(s)
 
       fail ArgumentError.new('not a PDF file') \
-        unless s.match(/\A%PDF-\d+\.\d+\n/)
+        unless s.match(/\A%PDF-\d+\.\d+\s/)
 
       @source = s
       @xref = nil
@@ -83,7 +83,7 @@ module Podoff
       #
       loop do
 
-        matches[:obj] ||= s.match(/^(\d+ \d+) obj\b/, index)
+        matches[:obj] ||= s.match(/(\d+ \d+) obj\b/, index)
         matches[:endobj] ||= s.match(/\bendobj\b/, index)
         #
         OBJ_ATTRIBUTES.each do |k, v|
@@ -100,7 +100,7 @@ module Podoff
         fail ArgumentError.new('failed to find "startxref"') unless sxrm
 
         @root = nil if @root && index > @root.offset(0).last
-        @root ||= s.match(/\/Root (\d+ \d+) R\b/, index)
+        @root ||= s.match(/\/Root (\d+ \d+) R/, index)
 
         sxri = sxrm.offset(0).first
         obji = objm ? objm.offset(0).first : sxri + 1

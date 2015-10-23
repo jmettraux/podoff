@@ -4,6 +4,7 @@
 
 == podoff 1.0.1  not yet released
 
+- bin/podoff
 - Document#rewrite(path)
 
 
