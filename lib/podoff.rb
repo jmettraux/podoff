@@ -514,6 +514,7 @@ module Podoff
 
       @font = "/#{n} #{font_size} Tf "
     end
+    alias :font :tf
 
     def bt(x, y, text)
 
@@ -523,6 +524,7 @@ module Podoff
       @content.write "#{x} #{y} Td (#{escape(text)}) Tj"
       @content.write " ET"
     end
+    alias :text :bt
 
     def write(text)
 
