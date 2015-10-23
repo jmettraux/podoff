@@ -2,6 +2,11 @@
 = podoff CHANGELOG.txt
 
 
+== podoff 1.0.1  not yet released
+
+- Document#rewrite(path)
+
+
 == podoff 1.0.0  released 2015-10-23
 
 - leverage incremental updates

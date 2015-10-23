@@ -26,7 +26,7 @@
 
 module Podoff
 
-  VERSION = '1.0.0'
+  VERSION = '1.0.1'
 
   def self.load(path, encoding='iso-8859-1')
 
