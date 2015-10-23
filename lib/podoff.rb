@@ -38,10 +38,12 @@ module Podoff
     Podoff::Document.new(s)
   end
 
+  #OBJ_ATTRIBUTES =
+  #  { type: 'Type', subtype: 'Subtype',
+  #    parent: 'Parent', kids: 'Kids', contents: 'Contents', annots: 'Annots',
+  #    pagenum: 'pdftk_PageNum' }
   OBJ_ATTRIBUTES =
-    { type: 'Type', subtype: 'Subtype',
-      parent: 'Parent', kids: 'Kids', contents: 'Contents', annots: 'Annots',
-      pagenum: 'pdftk_PageNum' }
+    { type: 'Type', contents: 'Contents', pagenum: 'pdftk_PageNum' }
 
   class Document
 
@@ -360,31 +362,34 @@ module Podoff
       @source != nil
     end
 
-    def type; @attributes[:type]; end
+    def type
+
+      @attributes && @attributes[:type]
+    end
 
     def page_number
 
-      r = @attributes[:pagenum]
+      r = @attributes && @attributes[:pagenum]
       r ? r.to_i : nil
     end
 
-    def parent
-
-      r = @attributes[:parent]
-      r ? r[0..-2].strip : nil
-    end
-
-    def kids
-
-      r = @attributes[:kids]
-      (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
-    end
-
-    def contents
-
-      r = @attributes[:contents]
-      (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
-    end
+#    def parent
+#
+#      r = @attributes[:parent]
+#      r ? r[0..-2].strip : nil
+#    end
+#
+#    def kids
+#
+#      r = @attributes[:kids]
+#      (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
+#    end
+#
+#    def contents
+#
+#      r = @attributes[:contents]
+#      (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
+#    end
 
 #    def add_annotation(ref)
 #

@@ -93,51 +93,58 @@ endobj
 
       expect(@d.objs['17 0'].type).to eq(nil)
     end
-  end
 
-  describe '#parent' do
+    it 'works on open streams' do
 
-    it 'returns the parent ref if any' do
+      st = @d.add_stream
 
-      expect(@d.objs.values.first.parent).to eq('2 0')
-    end
-
-    it 'returns nil if there is no parent' do
-
-      expect(@d.objs['2 0'].parent).to eq(nil)
+      expect(st.obj.type).to eq(nil)
     end
   end
 
-  describe '#kids' do
+#  describe '#parent' do
+#
+#    it 'returns the parent ref if any' do
+#
+#      expect(@d.objs.values.first.parent).to eq('2 0')
+#    end
+#
+#    it 'returns nil if there is no parent' do
+#
+#      expect(@d.objs['2 0'].parent).to eq(nil)
+#    end
+#  end
 
-    it 'returns a list of refs' do
-
-      expect(@d.objs['2 0'].kids).to eq([ '1 0', '16 0', '33 0' ])
-    end
-
-    it 'returns an empty list if there are no kids' do
-
-      expect(@d.objs['224 0'].kids).to eq([])
-    end
-  end
-
-  describe '#contents' do
-
-    it 'returns the Contents references (single)' do
-
-      expect(@d.objs['1 0'].contents).to eq([ '3 0' ])
-    end
-
-    it 'returns the Contents references (array)' do
-
-      expect(@d.objs['16 0'].contents).to eq([ '17 0' ])
-    end
-
-    it 'returns an empty list if none' do
-
-      expect(@d.objs['224 0'].contents).to eq([])
-    end
-  end
+#  describe '#kids' do
+#
+#    it 'returns a list of refs' do
+#
+#      expect(@d.objs['2 0'].kids).to eq([ '1 0', '16 0', '33 0' ])
+#    end
+#
+#    it 'returns an empty list if there are no kids' do
+#
+#      expect(@d.objs['224 0'].kids).to eq([])
+#    end
+#  end
+#
+#  describe '#contents' do
+#
+#    it 'returns the Contents references (single)' do
+#
+#      expect(@d.objs['1 0'].contents).to eq([ '3 0' ])
+#    end
+#
+#    it 'returns the Contents references (array)' do
+#
+#      expect(@d.objs['16 0'].contents).to eq([ '17 0' ])
+#    end
+#
+#    it 'returns an empty list if none' do
+#
+#      expect(@d.objs['224 0'].contents).to eq([])
+#    end
+#  end
 
   context 'insertions' do
 
