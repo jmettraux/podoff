@@ -276,7 +276,54 @@ module Podoff
 
       f.close
 
-      path == :string ? f.string : nil
+      f.is_a?(StringIO) ? f.string : nil
+    end
+
+    def rewrite(path=:string)
+
+      f =
+        (path == :string || path == '-') ?
+        StringIO.new :
+        File.open(path, 'wb')
+
+      v = source.match(/%PDF-\d+\.\d+/)[0]
+      f.write(v)
+      f.write("\n")
+
+      ptrs = {}
+
+      objs.keys.sort.each do |k|
+        ptrs[k] = f.pos + 1
+        f.write(objs[k].source)
+        f.write("\n")
+      end
+
+      xref = f.pos + 1
+      max = objs.keys.inject(-1) { |i, k| [ i, k.split(' ')[0].to_i ].max }
+
+      f.write("xref\n0 #{max}\n0000000000 65535 f\n")
+
+      (1..max).each do |i|
+        k = "#{i} 0"
+        k = ptrs.has_key?(k) ?  k : objs.keys.find { |k| k.match(/^#{i} \d+$/) }
+        if k
+          f.write(sprintf("%010d 00000 n\n", ptrs[k]))
+        else
+          f.write("0000000000 00000 n\n")
+        end
+      end
+
+      f.write("trailer\n")
+      f.write("<<\n")
+      f.write("/Size #{objs.size}\n")
+      f.write("/Root #{root} R\n")
+      f.write(">>\n")
+      f.write("startxref #{xref}\n")
+      f.write("%%EOF\n")
+
+      f.close
+
+      f.is_a?(StringIO) ? f.string : nil
     end
 
     private

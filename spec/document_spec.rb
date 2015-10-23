@@ -77,43 +77,6 @@ describe Podoff::Document do
     end
   end
 
-  describe '#write' do
-
-    it 'writes the document to a given path' do
-
-      @d.write('tmp/out.pdf')
-
-      s = File.open('tmp/out.pdf', 'r:iso8859-1') { |f| f.read }
-      lines = s.split("\n")
-
-      expect(lines.first).to match(/^%PDF-1.7$/)
-      expect(lines.last).to match(/^%%EOF$/)
-    end
-
-    it 'writes open streams as well' do
-
-      d = Podoff.load('pdfs/t0.pdf')
-
-      pa = d.re_add(d.page(1))
-      st = d.add_stream
-      st.bt(10, 20, 'hello open stream')
-      pa.insert_contents(st)
-
-      s = d.write(:string)
-
-      expect(
-        d.write(:string).index(%{
-7 0 obj
-<< /Length 37 >>
-stream
-BT 10 20 Td (hello open stream) Tj ET
-endstream
-endobj
-        }.strip)
-      ).to eq(722)
-    end
-  end
-
   describe '#dup' do
 
     it 'produces a shallow copy of the document' do
@@ -272,6 +235,96 @@ BT /Helvetica 35 Tf 40 50 Td (sixty there) Tj ET
         expect(re.source).to eq(pa.source)
         expect(re.source).not_to equal(pa.source)
       end
+    end
+  end
+
+  describe '#write' do
+
+    it 'writes the document to a given path' do
+
+      @d.write('tmp/out.pdf')
+
+      s = File.open('tmp/out.pdf', 'r:iso8859-1') { |f| f.read }
+      lines = s.split("\n")
+
+      expect(lines.first).to match(/^%PDF-1.7$/)
+      expect(lines.last).to match(/^%%EOF$/)
+    end
+
+    it 'writes open streams as well' do
+
+      d = Podoff.load('pdfs/t0.pdf')
+
+      pa = d.re_add(d.page(1))
+      st = d.add_stream
+      st.bt(10, 20, 'hello open stream')
+      pa.insert_contents(st)
+
+      s = d.write(:string)
+
+      expect(
+        d.write(:string).index(%{
+7 0 obj
+<< /Length 37 >>
+stream
+BT 10 20 Td (hello open stream) Tj ET
+endstream
+endobj
+        }.strip)
+      ).to eq(722)
+    end
+  end
+
+  describe '#rewrite' do
+
+    it 'rewrites a document in one go' do
+
+      d = Podoff.load('pdfs/t2.pdf')
+
+      s = d.rewrite(:string)
+
+      expect(s.strip).to eq(%{
+%PDF-1.4
+1 0 obj <</Type /Catalog /Pages 2 0 R>>
+endobj
+2 0 obj <</Type /Pages /Kids [3 0 R] /Count 1>>
+endobj
+3 0 obj <</Type /Page /Parent 2 0 R /Resources 4 0 R /MediaBox [0 0 500 800] /Contents [6 0 R 7 0 R]>>
+endobj
+4 0 obj <</Font <</F1 5 0 R>>>>
+endobj
+5 0 obj <</Type /Font /Subtype /Type1 /BaseFont /Helvetica>>
+endobj
+6 0 obj
+<</Length 44>>
+stream
+BT /F1 24 Tf 175 720 Td (Hello Nadaa!)Tj ET
+endstream
+endobj
+7 0 obj
+<</Length 44>>
+stream
+BT /F1 24 Tf 175 520 Td (Smurf Megane)Tj ET
+endstream
+endobj
+xref
+0 7
+0000000000 65535 f
+0000000010 00000 n
+0000000057 00000 n
+0000000112 00000 n
+0000000222 00000 n
+0000000261 00000 n
+0000000329 00000 n
+0000000420 00000 n
+trailer
+<<
+/Size 7
+/Root 1 0 R
+>>
+startxref 511
+%%EOF
+      }.strip)
     end
   end
 end
