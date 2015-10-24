@@ -35,6 +35,8 @@ describe Podoff do
         [ 1, 1, 1, 1, 1, 1 ])
 
       expect(d.root).to eq('1 0')
+
+      expect(d.pages.size).to eq(1)
     end
 
     it 'loads a PDF document' do
@@ -48,6 +50,8 @@ describe Podoff do
       expect(d.objs.keys).to include('273 0')
 
       expect(d.root).to eq('65 0')
+
+      expect(d.pages.size).to eq(3)
     end
 
     it 'loads a PDF document with incremental updates' do
@@ -64,6 +68,25 @@ describe Podoff do
         [ 1, 1, 1, 1, 1, 2 ])
 
       expect(d.root).to eq('1 0')
+    end
+
+    it 'loads a [re]compressed PDF documents' do
+
+      d = Podoff.load('pdfs/qdocument0.pdf')
+
+      expect(d.class).to eq(Podoff::Document)
+      expect(d.xref).to eq(1612815)
+      expect(d.objs.size).to eq(273)
+
+      expect(d.root).to eq('1 0')
+
+      #d.objs.each do |ref, o|
+      #  p [ o.ref, o.attributes ]
+      #end
+
+      expect(d.pages.size).to eq(3)
+      expect(d.pages.first.attributes[:pagenum]).to eq('1')
+      expect(d.objs['46 0'].attributes[:type]).to eq('/Annot')
     end
 
     it 'rejects items that are not PDF documents' do

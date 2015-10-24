@@ -368,7 +368,7 @@ module Podoff
         sca.pos = st
         i = sca.skip_until(/\/#{v}\b/); next unless i
         next if sca.pos > en
-        atts[k] = sca.scan(/ *\/?[^\n\r\/]+/).strip
+        atts[k] = sca.scan(/ *\/?[^\n\r\/>]+/).strip
       end
 
       sca.pos = en
