@@ -81,20 +81,36 @@ module Podoff
 
       loop do
 
-        i = sca.skip_until(/(startxref\s+\d+|\d+ \d+ obj|\/Root\s+\d+ \d+ R)/)
+        i = sca.skip_until(
+          /(startxref\s+\d+|\d+\s+\d+\s+obj|\/Root\s+\d+\s+\d+\s+R)/)
+
         m = sca.matched
         break unless m
 
         if m[0] == 's'
           @xref = m.split(' ').last.to_i
         elsif m[0] == '/'
-          @root = m[5..-2].strip
+          @root = extract_ref(m)
         else
           obj = Podoff::Obj.extract(self, sca)
           @objs[obj.ref] = obj
           @obj_counters[obj.ref] = (@obj_counters[obj.ref] || 0) + 1
         end
       end
+
+      if @root == nil
+        sca.pos = 0
+        loop do
+          i = sca.skip_until(/\/Root\s+\d+\s+\d+\s+R/)
+          break unless sca.matched
+          @root = extract_ref(sca.matched)
+        end
+      end
+    end
+
+    def extract_ref(s)
+
+      s.gsub(/\s+/, ' ').gsub(/[^0-9 ]+/, '').strip
     end
 
     def updated?
