@@ -435,62 +435,6 @@ module Podoff
       r ? r.to_i : nil
     end
 
-#    def parent
-#
-#      r = @attributes[:parent]
-#      r ? r[0..-2].strip : nil
-#    end
-#
-#    def kids
-#
-#      r = @attributes[:kids]
-#      (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
-#    end
-#
-#    def contents
-#
-#      r = @attributes[:contents]
-#      (r || '').split(/[\[\]R]/).collect(&:strip).reject(&:empty?)
-#    end
-
-#    def add_annotation(ref)
-#
-#      if annots = @attributes[:annots]
-#        fail "implement me!"
-#      else
-#        i = @source.index('/Type ')
-#        @source.insert(i, "/Annots [#{ref} R]\n")
-#      end
-#      recompute_attributes
-#    end
-
-#    def add_free_text(x, y, text, font, size)
-#
-#      fail ArgumentError.new('target is not a page') unless type == '/Page'
-#
-#      nref = document.new_ref
-#
-#      s = [
-#        "#{nref} obj <<",
-#        "/Type /Annot",
-#        "/Subtype /FreeText",
-#        "/Da (/F1 70 Tf 0 100 Td)",
-#        "/Rect [0 0 500 600]",
-#        "/Contents (#{text})",
-#        ">>",
-#        "endobj"
-#      ].join("\n")
-#      anno = Obj.create(document, nref, s)
-#
-#      page = self.replicate
-#      page.add_annotation(nref)
-#
-#      document.add(anno)
-#      document.add(page)
-#
-#      anno
-#    end
-
     def insert_font(nick, obj_or_ref)
 
       fail ArgumentError.new("target '#{ref}' not a replica") \
@@ -565,10 +509,6 @@ module Podoff
       @font = nil
       @content = StringIO.new
     end
-
-    #def document; obj.document; end
-    #def ref; obj.ref; end
-    #def source; self; end
 
     def tf(font_name, font_size)
 
