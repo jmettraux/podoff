@@ -235,6 +235,16 @@ BT /Helvetica 35 Tf 40 50 Td (sixty there) Tj ET
         expect(re.source).to eq(pa.source)
         expect(re.source).not_to equal(pa.source)
       end
+
+      it 'recomputes the attributes correctly' do
+
+        d = Podoff.load('pdfs/qdocument0.pdf')
+
+        pa = d.re_add(d.page(1))
+
+        expect(pa.attributes).to eq(
+          { type: '/Page', contents: '151 0 R', pagenum: '1' })
+      end
     end
   end
 

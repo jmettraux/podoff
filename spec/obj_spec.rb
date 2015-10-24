@@ -232,6 +232,21 @@ endobj
         expect(pa.source).to match(/\/Font\s+<<\s+\/MyHelv #{fo.ref} R\s+/)
       end
     end
+
+    describe '#add_to_attribute' do
+
+      it 'adds to a list of references' do
+
+        d = Podoff.load('pdfs/qdocument0.pdf')
+
+        o = d.re_add('56 0')
+
+        o.send(:add_to_attribute, :contents, '9999 0')
+
+        expect(o.attributes).to eq(
+          { type: '/Page', contents: '[151 0 R 9999 0 R]', pagenum: '1' })
+      end
+    end
   end
 end
 

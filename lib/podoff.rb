@@ -469,8 +469,8 @@ module Podoff
 
       @attributes =
         ATTRIBUTES.inject({}) do |h, (k, v)|
-          m = @source.match(/#{v} (\/?[^\/\n<>]+)/)
-          h[k] = m[1] if m
+          m = @source.match(/\/#{v}\s+(\/?[^\/\n<>]+)/)
+          h[k] = m[1].strip if m
           h
         end
     end
