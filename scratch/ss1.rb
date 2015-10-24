@@ -33,10 +33,16 @@ version = sca.scan(/%PDF-\d+\.\d+/)
 p version
 
 loop do
-  o = sca.scan_object
-  p o
-  x = sca.scan_xref
-  r = sca.scan_root
-  break unless o
+  i = sca.skip_until(/(startxref\s+\d+|\d+ \d+ obj|\/Root\s+\d+ \d+ R)/)
+  break unless i
+  m = sca.matched
+  p m
+  #if m[0] == 's'
+  #  obj = scan_object(sca)
+  #elsif m[0] == '/'
+  #  root = scan_root(sca)
+  #else
+  #  xref = scan_xref(sca)
+  #end
 end
 

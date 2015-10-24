@@ -77,27 +77,20 @@ module Podoff
       @version = sca.scan(/%PDF-\d+\.\d+/)
 
       loop do
-        c = sca.skip_until(/\d+ \d+ obj/); break unless c
-        sca.bakc(4)
-        sca.baks('0123456789 ')
-        #p [ :o, sca.pos, s[sca.pos, 14] ]
-        obj = Podoff::Obj.extract(self, sca)
-        @objs[obj.ref] = obj
-        @obj_counters[obj.ref] = (@obj_counters[obj.ref] || 0) + 1
-      end
 
-      sca.pos = 0
-      loop do
-        c = sca.skip_until(/startxref\s+/); break unless c
-        m = sca.scan(/\d+/); break unless m
-        @xref = m.to_i
-      end
+        i = sca.skip_until(/(startxref\s+\d+|\d+ \d+ obj|\/Root\s+\d+ \d+ R)/)
+        m = sca.matched
+        break unless m
 
-      sca.pos = 0
-      loop do
-        c = sca.skip_until(/\/Root\s+/); break unless c
-        m = sca.scan(/\d+ \d+ R/); break unless m
-        @root = m[0..-2].strip
+        if m[0] == 's'
+          @xref = m.split(' ').last.to_i
+        elsif m[0] == '/'
+          @root = m[5..-2].strip
+        else
+          obj = Podoff::Obj.extract(self, sca)
+          @objs[obj.ref] = obj
+          @obj_counters[obj.ref] = (@obj_counters[obj.ref] || 0) + 1
+        end
       end
     end
 
@@ -324,8 +317,8 @@ module Podoff
 
     def self.extract(doc, sca)
 
-      re = sca.scan(/\s*(\d+ \d+)/).strip
-      st = sca.pos - re.length
+      re = sca.matched[0..-4].strip
+      st = sca.pos - sca.matched.length
 
       i = sca.skip_until(/endobj/); return nil unless i
       en = sca.pos - 1
