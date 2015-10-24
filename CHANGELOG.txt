@@ -2,7 +2,7 @@
 = podoff CHANGELOG.txt
 
 
-== podoff 1.1.0  not yet released
+== podoff 1.1.0  released 2015-10-25
 
 - more tolerant at parsing (StringScanner)
 - bin/podoff
