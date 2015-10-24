@@ -24,6 +24,7 @@
 #++
 
 require 'strscan'
+require 'stringio'
 
 
 module Podoff
@@ -257,9 +258,11 @@ module Podoff
     def rewrite(path=:string)
 
       f =
-        (path == :string || path == '-') ?
-        StringIO.new :
-        File.open(path, 'wb')
+        case path
+          when :string, '-' then StringIO.new
+          when String then File.open(path, 'wb')
+          else path
+        end
 
       v = source.match(/%PDF-\d+\.\d+/)[0]
       f.write(v)
@@ -296,7 +299,7 @@ module Podoff
       f.write("startxref #{xref}\n")
       f.write("%%EOF\n")
 
-      f.close
+      f.close if path.is_a?(String) || path.is_a?(Symbol)
 
       f.is_a?(StringIO) ? f.string : nil
     end
