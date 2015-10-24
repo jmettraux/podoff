@@ -73,7 +73,7 @@ module Podoff
 
       @additions = {}
 
-      sca = Podoff::Scanner.new(s)
+      sca = StringScanner.new(s)
       @version = sca.scan(/%PDF-\d+\.\d+/)
 
       loop do
@@ -563,72 +563,6 @@ module Podoff
     def escape(s)
 
       s.gsub(/\(/, '\(').gsub(/\)/, '\)')
-    end
-  end
-
-  class Scanner < ::StringScanner
-
-    def peekch
-
-      c = getch
-      self.pos = self.pos - 1
-      c
-    end
-
-    def bakc(char=1, count=1)
-
-      if char.is_a?(Fixnum)
-        npos = self.pos - char
-        fail RangeError.new("index out of range #{npos}") if npos < 0
-        self.pos = npos
-        return
-      end
-
-      loop do
-        break if self.pos == 0
-        self.pos = self.pos - 1
-        next unless peekch == char
-        count = count - 1
-        break if count <= 0
-      end
-    end
-
-    def forc(char=1, count=1)
-
-      if char.is_a?(Fixnum)
-        self.pos = self.pos + char
-        return
-      end
-
-      loop do
-        c = peekch
-        break if c == nil
-        break if c == char && count <= 1
-        count = count - 1 if c == char
-        self.pos = self.pos + 1
-      end
-    end
-
-    def bakn
-
-      loop do
-        self.pos = self.pos - 1
-        c = peekch
-        next if (c >= '0' && c <= '9')
-        self.pos = self.pos + 1
-        break
-      end
-    end
-
-    def baks(s)
-
-      loop do
-        break if self.pos == 0
-        self.pos = self.pos - 1
-        next if s.index(peekch)
-        self.pos = self.pos + 1
-        break
-      end
     end
   end
 end
