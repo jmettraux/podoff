@@ -17,8 +17,8 @@ describe Podoff do
       d = Podoff.load('pdfs/t0.pdf')
 
       expect(d.class).to eq(Podoff::Document)
-      expect(d.xref).to eq(414)
       expect(d.objs.keys).to eq([ '1 0', '2 0', '3 0', '4 0', '5 0', '6 0' ])
+      expect(d.xref).to eq(414)
 
       #pp d.objs.values.collect(&:to_a)
 

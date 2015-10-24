@@ -38,13 +38,6 @@ module Podoff
     Podoff::Document.new(s)
   end
 
-  #OBJ_ATTRIBUTES =
-  #  { type: 'Type', subtype: 'Subtype',
-  #    parent: 'Parent', kids: 'Kids', contents: 'Contents', annots: 'Annots',
-  #    pagenum: 'pdftk_PageNum' }
-  OBJ_ATTRIBUTES =
-    { type: 'Type', contents: 'Contents', pagenum: 'pdftk_PageNum' }
-
   class Document
 
     def self.load(path, encoding='iso-8859-1')
@@ -58,6 +51,7 @@ module Podoff
     end
 
     attr_reader :source
+    attr_reader :version
     attr_reader :xref
     attr_reader :objs
     attr_reader :obj_counters
@@ -71,6 +65,7 @@ module Podoff
         unless s.match(/\A%PDF-\d+\.\d+\s/)
 
       @source = s
+      @version = nil
       @xref = nil
       @objs = {}
       @obj_counters = {}
@@ -78,47 +73,32 @@ module Podoff
 
       @additions = {}
 
-      index = 0
-      matches = {}
-      #
+      sca = Podoff::Scanner.new(s)
+      @version = sca.scan(/%PDF-\d+\.\d+/)
+
       loop do
-
-        matches[:obj] ||= s.match(/(\d+ \d+) obj\b/, index)
-        matches[:endobj] ||= s.match(/\bendobj\b/, index)
-        #
-        OBJ_ATTRIBUTES.each do |k, v|
-          matches[k] ||= s.match(/\/#{v} (\/?[^\/\n<>]+)/, index)
-        end
-        #
-        matches[:startxref] ||= s.match(/\bstartxref\s+(\d+)\s*%%EOF/, index)
-
-        objm = matches[:obj]
-        sxrm = matches[:startxref]
-
-        break unless sxrm || objm
-
-        fail ArgumentError.new('failed to find "startxref"') unless sxrm
-
-        @root = nil if @root && index > @root.offset(0).last
-        @root ||= s.match(/\/Root (\d+ \d+) R/, index)
-
-        sxri = sxrm.offset(0).first
-        obji = objm ? objm.offset(0).first : sxri + 1
-
-        if obji < sxri
-          obj = Podoff::Obj.extract(self, matches)
-          @objs[obj.ref] = obj
-          @obj_counters[obj.ref] = (@obj_counters[obj.ref] || 0) + 1
-          index = obj.end_index + 1
-        else
-          @xref = sxrm[1].to_i
-          index = sxrm.offset(0).last + 1
-          matches.delete(:startxref)
-        end
+        c = sca.skip_until(/\d+ \d+ obj/); break unless c
+        sca.bakc(4)
+        sca.baks('0123456789 ')
+        #p [ :o, sca.pos, s[sca.pos, 14] ]
+        obj = Podoff::Obj.extract(self, sca)
+        @objs[obj.ref] = obj
+        @obj_counters[obj.ref] = (@obj_counters[obj.ref] || 0) + 1
       end
 
-      fail ArgumentError.new('found no /Root') unless @root
-      @root = @root[1]
+      sca.pos = 0
+      loop do
+        c = sca.skip_until(/startxref\s+/); break unless c
+        m = sca.scan(/\d+/); break unless m
+        @xref = m.to_i
+      end
+
+      sca.pos = 0
+      loop do
+        c = sca.skip_until(/\/Root\s+/); break unless c
+        m = sca.scan(/\d+ \d+ R/); break unless m
+        @root = m[0..-2].strip
+      end
     end
 
     def updated?
@@ -339,24 +319,26 @@ module Podoff
 
   class Obj
 
-    def self.extract(doc, matches)
+    ATTRIBUTES =
+      { type: 'Type', contents: 'Contents', pagenum: 'pdftk_PageNum' }
 
-      re = matches[:obj][1]
-      st = matches[:obj].offset(0).first
-      en = matches[:endobj].offset(0).last - 1
+    def self.extract(doc, sca)
+
+      re = sca.scan(/\s*(\d+ \d+)/).strip
+      st = sca.pos - re.length
+
+      i = sca.skip_until(/endobj/); return nil unless i
+      en = sca.pos - 1
 
       atts = {}
-
-      OBJ_ATTRIBUTES.keys.each do |k|
-        m = matches[k]
-        if m && m.offset(0).last < en
-          atts[k] = m[1].strip
-          matches.delete(k)
-        end
+      ATTRIBUTES.each do |k, v|
+        sca.pos = st
+        i = sca.skip_until(/\/#{v}\b/); next unless i
+        next if sca.pos > en
+        atts[k] = sca.scan(/ *\/?[^\n\r\/]+/).strip
       end
 
-      matches.delete(:obj)
-      matches.delete(:endobj)
+      sca.pos = en
 
       Podoff::Obj.new(doc, re, st, en, atts)
     end
@@ -509,8 +491,8 @@ module Podoff
     def recompute_attributes
 
       @attributes =
-        OBJ_ATTRIBUTES.inject({}) do |h, (k, v)|
-          m = @source.match(/\/#{v} (\/?[^\/\n<>]+)/)
+        ATTRIBUTES.inject({}) do |h, (k, v)|
+          m = @source.match(/#{v} (\/?[^\/\n<>]+)/)
           h[k] = m[1] if m
           h
         end
@@ -528,7 +510,7 @@ module Podoff
 
       fail ArgumentError.new("obj not replicated") unless @source
 
-      pkey = OBJ_ATTRIBUTES[key]
+      pkey = ATTRIBUTES[key]
 
       if v = @attributes[key]
         v = concat(v, ref)
@@ -588,6 +570,72 @@ module Podoff
     def escape(s)
 
       s.gsub(/\(/, '\(').gsub(/\)/, '\)')
+    end
+  end
+
+  class Scanner < ::StringScanner
+
+    def peekch
+
+      c = getch
+      self.pos = self.pos - 1
+      c
+    end
+
+    def bakc(char=1, count=1)
+
+      if char.is_a?(Fixnum)
+        npos = self.pos - char
+        fail RangeError.new("index out of range #{npos}") if npos < 0
+        self.pos = npos
+        return
+      end
+
+      loop do
+        break if self.pos == 0
+        self.pos = self.pos - 1
+        next unless peekch == char
+        count = count - 1
+        break if count <= 0
+      end
+    end
+
+    def forc(char=1, count=1)
+
+      if char.is_a?(Fixnum)
+        self.pos = self.pos + char
+        return
+      end
+
+      loop do
+        c = peekch
+        break if c == nil
+        break if c == char && count <= 1
+        count = count - 1 if c == char
+        self.pos = self.pos + 1
+      end
+    end
+
+    def bakn
+
+      loop do
+        self.pos = self.pos - 1
+        c = peekch
+        next if (c >= '0' && c <= '9')
+        self.pos = self.pos + 1
+        break
+      end
+    end
+
+    def baks(s)
+
+      loop do
+        break if self.pos == 0
+        self.pos = self.pos - 1
+        next if s.index(peekch)
+        self.pos = self.pos + 1
+        break
+      end
     end
   end
 end
