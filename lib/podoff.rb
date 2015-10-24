@@ -23,6 +23,8 @@
 # Made in Japan.
 #++
 
+require 'strscan'
+
 
 module Podoff
 
@@ -73,7 +75,7 @@ module Podoff
 
       @additions = {}
 
-      sca = StringScanner.new(s)
+      sca = ::StringScanner.new(s)
       @version = sca.scan(/%PDF-\d+\.\d+/)
 
       loop do
