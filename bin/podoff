@@ -37,13 +37,13 @@ OptionParser.new do |op|
   op.separator ''
 
   op.on('-r', '--refs', 'List refs') do
-
     command = 'list_refs'
   end
-
   op.on('-w', '--rewrite', 'Rewrite') do
-
     command = 'rewrite'
+  end
+  op.on('-s', '--stamp', 'Rewrite') do
+    command = 'stamp'
   end
 
   op.on('--version', 'Show version') do
@@ -75,6 +75,22 @@ module Podoff::Commands
   def self.rewrite(doc)
 
     doc.rewrite($stdout)
+  end
+
+  def self.stamp(doc)
+
+    fo = doc.add_base_font('Helvetica')
+    st = doc.add_stream {
+      tf '/PoHelv', 14
+      bt 10, 10, "#{Time.now} podoff #{Podoff::VERSION}"
+    }
+    doc.pages.each { |pa|
+      pa = doc.re_add(pa)
+      pa.insert_font('/PoHelv', fo)
+      pa.insert_content(st)
+    }
+
+    doc.write($stdout)
   end
 end
 

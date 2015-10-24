@@ -224,7 +224,12 @@ module Podoff
 
     def write(path)
 
-      f = (path == :string) ? StringIO.new : File.open(path, 'wb')
+      f =
+        case path
+          when :string, '-' then StringIO.new
+          when String then File.open(path, 'wb')
+          else path
+        end
 
       f.write(@source)
 
@@ -266,7 +271,7 @@ module Podoff
         f.write("%%EOF\n")
       end
 
-      f.close
+      f.close if path.is_a?(String) || path.is_a?(Symbol)
 
       f.is_a?(StringIO) ? f.string : nil
     end
@@ -295,15 +300,29 @@ module Podoff
       xref = f.pos + 1
       max = objs.keys.inject(-1) { |i, k| [ i, k.split(' ')[0].to_i ].max }
 
-      f.write("xref\n0 #{max}\n0000000000 65535 f\n")
+      #f.write("xref\n0 #{max}\n0000000000 65535 f\n")
+      f.write("xref\n0 1\n0000000000 65535 f\n")
 
+      partitions = [ [] ]
+      #
       (1..max).each do |i|
         k = "#{i} 0"
-        k = ptrs.has_key?(k) ?  k : objs.keys.find { |k| k.match(/^#{i} \d+$/) }
-        if k
-          f.write(sprintf("%010d 00000 n\n", ptrs[k]))
+        last = partitions.last
+        if ptrs.has_key?(k)
+          last << i
         else
-          f.write("0000000000 00000 n\n")
+          partitions << [] unless last == []
+        end
+      end
+      #
+      partitions.each do |part|
+
+        f.write("#{part.first} #{part.size}\n")
+
+        part.each do |i|
+          k = "#{i} 0"
+          #f.write(sprintf("%010d 00000 n %% %s\n", ptrs[k], k))
+          f.write(sprintf("%010d 00000 n\n", ptrs[k]))
         end
       end
 
