@@ -2,8 +2,9 @@
 = podoff CHANGELOG.txt
 
 
-== podoff 1.0.1  not yet released
+== podoff 1.1.0  not yet released
 
+- more tolerant at parsing (StringScanner)
 - bin/podoff
 - Document#rewrite(path)
 
