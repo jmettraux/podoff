@@ -29,7 +29,7 @@ require 'stringio'
 
 module Podoff
 
-  VERSION = '1.1.0'
+  VERSION = '1.1.1'
 
   def self.load(path, encoding='iso-8859-1')
 
