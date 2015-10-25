@@ -120,13 +120,12 @@ describe Podoff::Document do
         expect(fo.ref).to eq('7 0')
 
         expect(fo.source).to eq(
-          '7 0 obj ' +
-          '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj')
+          '7 0 obj <</Type /Font /Subtype /Type1 /BaseFont /Helvetica>> endobj')
 
         s = @d.write(:string)
         d = Podoff.parse(s)
 
-        expect(d.xref).to eq(682)
+        expect(d.xref).to eq(680)
       end
 
       it 'doesn\'t mind a slash in front of the font name' do
@@ -141,8 +140,7 @@ describe Podoff::Document do
         expect(fo.ref).to eq('7 0')
 
         expect(fo.source).to eq(
-          '7 0 obj ' +
-          '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj')
+          '7 0 obj <</Type /Font /Subtype /Type1 /BaseFont /Helvetica>> endobj')
       end
     end
 
@@ -185,15 +183,20 @@ endobj
         expect(st.obj.document).to eq(@d)
         expect(st.obj.ref).to eq('7 0')
 
-        expect(st.obj.source.to_s).to eq(%{
+        expect(st.to_s).to eq(%{
+7 0 obj
+<</Length 97>>
+stream
 BT /Helvetica 35 Tf 10 20 Td (thirty here) Tj ET
 BT /Helvetica 35 Tf 40 50 Td (sixty there) Tj ET
+endstream
+endobj
         }.strip)
 
         d = Podoff.parse(@d.write(:string))
 
-        expect(d.source.index('<< /Length 97 >>')).to eq(618)
-        expect(d.xref).to eq(759)
+        expect(d.source.index('<</Length 97>>')).to eq(618)
+        expect(d.xref).to eq(757)
       end
 
       it 'returns the open stream when no arg given' do
@@ -275,7 +278,7 @@ BT /Helvetica 35 Tf 40 50 Td (sixty there) Tj ET
       expect(
         d.write(:string).index(%{
 7 0 obj
-<< /Length 37 >>
+<</Length 37>>
 stream
 BT 10 20 Td (hello open stream) Tj ET
 endstream

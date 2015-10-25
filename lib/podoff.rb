@@ -182,35 +182,32 @@ module Podoff
 
       name = name[1..-1] if name[0] == '/'
 
-      ref = new_ref
+      r = new_ref
+      s = "#{r} obj <</Type /Font /Subtype /Type1 /BaseFont /#{name}>> endobj"
 
-      add(
-        Obj.create(
-          self,
-          ref,
-          [
-            "#{ref} obj",
-            "<< /Type /Font /Subtype /Type1 /BaseFont /#{name} >>",
-            "endobj"
-          ].join(' ')))
+      add(Obj.new(self, r, source: s))
     end
 
-    def add_stream(s=nil, &block)
+    def add_stream(src=nil, &block)
 
       ref = new_ref
 
-      s = s || make_stream(&block)
+      src =
+        src &&
+        [
+          "#{ref} obj",
+          "<< /Length #{src.size} >>\nstream\n#{src}\nendstream",
+          "endobj"
+        ].join("\n")
 
-      s = [
-        "#{ref} obj",
-        "<< /Length #{s.length} >>",
-        "stream\n#{s}\nendstream",
-        "endobj"
-      ].join("\n") if s.is_a?(String)
+      str =
+        src ?
+        nil :
+        make_stream(&block)
 
-      o = add(Obj.create(self, ref, s))
+      obj = add(Obj.new(self, ref, source: src, stream: str))
 
-      s.is_a?(Podoff::Stream) ? s : o
+      str || obj
     end
 
     def re_add(obj_or_ref)
@@ -240,13 +237,7 @@ module Podoff
         @additions.values.each do |o|
           f.write("\n")
           pointers[o.ref] = f.pos + 1
-          if o.source.is_a?(String)
-            f.write(o.source)
-          else # Stream
-            s = o.source.to_s
-            f.write("#{o.ref} obj\n<< /Length #{s.length} >>\n")
-            f.write("stream\n#{s}\nendstream\nendobj")
-          end
+          f.write(o.to_s)
         end
         f.write("\n\n")
 
@@ -363,50 +354,50 @@ module Podoff
       i = sca.skip_until(/endobj/); return nil unless i
       en = sca.pos - 1
 
-      atts = {}
-      ATTRIBUTES.each do |k, v|
-        sca.pos = st
-        i = sca.skip_until(/\/#{v}\b/); next unless i
-        next if sca.pos > en
-        atts[k] = sca.scan(/ *\/?[^\n\r\/>]+/).strip
-      end
-
-      sca.pos = en
-
-      Podoff::Obj.new(doc, re, st, en, atts)
+      Podoff::Obj.new(doc, re, start_index: st, end_index: en, scanner: sca)
     end
 
     attr_reader :document
     attr_reader :ref
     attr_reader :start_index, :end_index
+    attr_reader :stream
     attr_reader :attributes
 
-    def initialize(doc, ref, st, en, atts, source=nil)
+    def initialize(doc, ref, opts={})
 
       @document = doc
       @ref = ref
-      @start_index = st
-      @end_index = en
-      @attributes = atts
-      @source = source
 
-      recompute_attributes if @source.is_a?(String)
-      @source.obj = self if @source.is_a?(Podoff::Stream)
+      @start_index = opts[:start_index]
+      @end_index = opts[:end_index]
+      @attributes = nil
+      @source = opts[:source]
+
+      @stream = opts[:stream]
+      @stream.obj = self if @stream
+
+      sca = opts[:scanner]
+
+      recompute_attributes(sca)
+      #@source.obj = self if @source.is_a?(Podoff::Stream)
+
+      sca.pos = @end_index if sca && @end_index
     end
 
     def dup(new_doc)
 
-      self.class.new(new_doc, ref, start_index, end_index, attributes.dup)
+      self.class.new(
+        new_doc, ref,
+        start_index: start_index, end_index: end_index)
     end
 
-    def self.create(doc, ref, source)
-
-      self.new(doc, ref, nil, nil, nil, source)
-    end
+    #def self.create(doc, ref, source)
+    #  self.new(doc, ref, nil, nil, nil, source)
+    #end
 
     def replicate
 
-      self.class.create(document, ref, source.dup)
+      self.class.new(document, ref, source: source.dup)
     end
 
     def to_a
@@ -416,7 +407,7 @@ module Podoff
 
     def source
 
-      @source || @document.source[@start_index..@end_index]
+      @source || (@start_index && @document.source[@start_index..@end_index])
     end
 
     def replica?
@@ -463,14 +454,29 @@ module Podoff
     end
     alias :insert_content :insert_contents
 
+    def to_s
+
+      source || stream.to_s
+    end
+
     protected
 
-    def recompute_attributes
+    def recompute_attributes(sca=nil)
+
+      st, en, sca =
+        if sca
+          [ @start_index, @end_index, sca ]
+        elsif @source
+          [ 0, @source.length, ::StringScanner.new(@source) ]
+        end
+
+      return unless sca
 
       @attributes =
         ATTRIBUTES.inject({}) do |h, (k, v)|
-          m = @source.match(/\/#{v}\s+(\/?[^\/\n<>]+)/)
-          h[k] = m[1].strip if m
+          sca.pos = st
+          i = sca.skip_until(/\/#{v}\b/)
+          h[k] = sca.scan(/ *\/?[^\n\r\/>]+/).strip if i && sca.pos < en
           h
         end
     end
@@ -504,8 +510,9 @@ module Podoff
 
     attr_accessor :obj
 
-    def initialize
+    def initialize(obj=nil)
 
+      @obj = obj
       @font = nil
       @content = StringIO.new
     end
@@ -535,7 +542,9 @@ module Podoff
 
     def to_s
 
-      @content.string
+      s = @content.string
+
+      "#{obj.ref} obj\n<</Length #{s.size}>>\nstream\n#{s}\nendstream\nendobj"
     end
 
     protected

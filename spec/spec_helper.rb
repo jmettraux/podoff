@@ -6,6 +6,7 @@
 #
 
 require 'pp'
+require 'ostruct'
 
 require 'podoff'
 

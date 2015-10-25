@@ -14,7 +14,7 @@ describe Podoff::Stream do
 
     it 'sets the current font' do
 
-      st = Podoff::Stream.new
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
 
       st.tf('/Helvetica', 35)
       st.bt(10, 20, 'helvetic')
@@ -22,8 +22,13 @@ describe Podoff::Stream do
       st.bt(10, 50, 'zapfesque')
 
       expect(st.to_s).to eq(%{
+1 0 obj
+<</Length 95>>
+stream
 BT /Helvetica 35 Tf 10 20 Td (helvetic) Tj ET
 BT /ZapfDingbats 21 Tf 10 50 Td (zapfesque) Tj ET
+endstream
+endobj
       }.strip)
     end
   end
@@ -32,18 +37,32 @@ BT /ZapfDingbats 21 Tf 10 50 Td (zapfesque) Tj ET
 
     it 'works' do
 
-      st = Podoff::Stream.new
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
       st.bt(10, 20, 'hello world')
 
-      expect(st.to_s).to eq('BT 10 20 Td (hello world) Tj ET')
+      expect(st.to_s).to eq(%{
+1 0 obj
+<</Length 31>>
+stream
+BT 10 20 Td (hello world) Tj ET
+endstream
+endobj
+      }.strip)
     end
 
     it 'escapes the text' do
 
-      st = Podoff::Stream.new
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
       st.bt(10, 20, 'hello()world')
 
-      expect(st.to_s).to eq('BT 10 20 Td (hello\(\)world) Tj ET')
+      expect(st.to_s).to eq(%{
+1 0 obj
+<</Length 34>>
+stream
+BT 10 20 Td (hello\\(\\)world) Tj ET
+endstream
+endobj
+      }.strip)
     end
   end
 
@@ -51,15 +70,20 @@ BT /ZapfDingbats 21 Tf 10 50 Td (zapfesque) Tj ET
 
     it 'injects text into the stream' do
 
-      st = Podoff::Stream.new
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
       st.bt(10, 20, 'abc')
       st.write("\nBT 25 35 Td (ABC) Tj ET")
       st.bt(30, 40, 'def')
 
       expect(st.to_s).to eq(%{
+1 0 obj
+<</Length 71>>
+stream
 BT 10 20 Td (abc) Tj ET
 BT 25 35 Td (ABC) Tj ET
 BT 30 40 Td (def) Tj ET
+endstream
+endobj
       }.strip)
     end
   end
