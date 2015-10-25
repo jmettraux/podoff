@@ -54,7 +54,7 @@ module Podoff
       Podoff::Document.new(s)
     end
 
-    attr_reader :source
+    attr_reader :scanner
     attr_reader :version
     attr_reader :xref
     attr_reader :objs
@@ -68,7 +68,7 @@ module Podoff
       fail ArgumentError.new('not a PDF file') \
         unless s.match(/\A%PDF-\d+\.\d+\s/)
 
-      @source = s
+      @scanner = ::StringScanner.new(s)
       @version = nil
       @xref = nil
       @objs = {}
@@ -77,15 +77,14 @@ module Podoff
 
       @additions = {}
 
-      sca = ::StringScanner.new(s)
-      @version = sca.scan(/%PDF-\d+\.\d+/)
+      @version = @scanner.scan(/%PDF-\d+\.\d+/)
 
       loop do
 
-        i = sca.skip_until(
+        i = @scanner.skip_until(
           /(startxref\s+\d+|\d+\s+\d+\s+obj|\/Root\s+\d+\s+\d+\s+R)/)
 
-        m = sca.matched
+        m = @scanner.matched
         break unless m
 
         if m[0] == 's'
@@ -93,20 +92,25 @@ module Podoff
         elsif m[0] == '/'
           @root = extract_ref(m)
         else
-          obj = Podoff::Obj.extract(self, sca)
+          obj = Podoff::Obj.extract(self)
           @objs[obj.ref] = obj
           @obj_counters[obj.ref] = (@obj_counters[obj.ref] || 0) + 1
         end
       end
 
       if @root == nil
-        sca.pos = 0
+        @scanner.pos = 0
         loop do
-          i = sca.skip_until(/\/Root\s+\d+\s+\d+\s+R/)
-          break unless sca.matched
-          @root = extract_ref(sca.matched)
+          i = @scanner.skip_until(/\/Root\s+\d+\s+\d+\s+R/)
+          break unless @scanner.matched
+          @root = extract_ref(@scanner.matched)
         end
       end
+    end
+
+    def source
+
+      @scanner.string
     end
 
     def extract_ref(s)
@@ -125,12 +129,10 @@ module Podoff
 
       self.class.allocate.instance_eval do
 
-        @source = o.source
+        @scanner = o.scanner
         @xref = o.xref
 
-        sca = ::StringScanner.new(@source)
-
-        @objs = o.objs.inject({}) { |h, (k, v)| h[k] = v.dup(self, sca); h }
+        @objs = o.objs.inject({}) { |h, (k, v)| h[k] = v.dup(self); h }
         @obj_counters = o.obj_counters.dup
 
         @root = o.root
@@ -231,7 +233,7 @@ module Podoff
           else path
         end
 
-      f.write(@source)
+      f.write(source)
 
       if @additions.any?
 
@@ -337,7 +339,9 @@ module Podoff
     ATTRIBUTES =
       { type: 'Type', contents: 'Contents', pagenum: 'pdftk_PageNum' }
 
-    def self.extract(doc, sca)
+    def self.extract(doc)
+
+      sca = doc.scanner
 
       re = sca.matched[0..-4].strip
       st = sca.pos - sca.matched.length
@@ -345,7 +349,7 @@ module Podoff
       i = sca.skip_until(/endobj/); return nil unless i
       en = sca.pos - 1
 
-      Podoff::Obj.new(doc, re, start_index: st, end_index: en, scanner: sca)
+      Podoff::Obj.new(doc, re, start_index: st, end_index: en)
     end
 
     attr_reader :document
@@ -367,19 +371,17 @@ module Podoff
       @stream = opts[:stream]
       @stream.obj = self if @stream
 
-      sca = opts[:scanner]
-
-      recompute_attributes(sca)
+      recompute_attributes
       #@source.obj = self if @source.is_a?(Podoff::Stream)
 
-      sca.pos = @end_index if sca && @end_index
+      @document.scanner.pos = @end_index if @document.scanner && @end_index
     end
 
-    def dup(new_doc, sca)
+    def dup(new_doc)
 
       self.class.new(
         new_doc, ref,
-        start_index: start_index, end_index: end_index, scanner: sca)
+        start_index: start_index, end_index: end_index)
     end
 
     #def self.create(doc, ref, source)
@@ -452,11 +454,11 @@ module Podoff
 
     protected
 
-    def recompute_attributes(sca=nil)
+    def recompute_attributes
 
       st, en, sca =
-        if sca
-          [ @start_index, @end_index, sca ]
+        if @start_index
+          [ @start_index, @end_index, @document.scanner ]
         elsif @source
           [ 0, @source.length, ::StringScanner.new(@source) ]
         end
