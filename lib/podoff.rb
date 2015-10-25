@@ -129,7 +129,7 @@ module Podoff
 
       self.class.allocate.instance_eval do
 
-        @scanner = o.scanner
+        @scanner = ::StringScanner.new(o.source)
         @xref = o.xref
 
         @objs = o.objs.inject({}) { |h, (k, v)| h[k] = v.dup(self); h }
