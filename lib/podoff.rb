@@ -128,7 +128,9 @@ module Podoff
         @source = o.source
         @xref = o.xref
 
-        @objs = o.objs.inject({}) { |h, (k, v)| h[k] = v.dup(self); h }
+        sca = ::StringScanner.new(@source)
+
+        @objs = o.objs.inject({}) { |h, (k, v)| h[k] = v.dup(self, sca); h }
         @obj_counters = o.obj_counters.dup
 
         @root = o.root
@@ -373,11 +375,11 @@ module Podoff
       sca.pos = @end_index if sca && @end_index
     end
 
-    def dup(new_doc)
+    def dup(new_doc, sca)
 
       self.class.new(
         new_doc, ref,
-        start_index: start_index, end_index: end_index)
+        start_index: start_index, end_index: end_index, scanner: sca)
     end
 
     #def self.create(doc, ref, source)

@@ -97,6 +97,15 @@ describe Podoff::Document do
 
       expect(d.root).to eq('65 0')
     end
+
+    it 'sports objs with properly recomputed attributes' do
+
+      pa = @d.page(1)
+
+      d = @d.dup
+
+      expect(d.objs[pa.ref].attributes).to eq(pa.attributes)
+    end
   end
 
   context 'additions' do
