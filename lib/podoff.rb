@@ -246,7 +246,7 @@ module Podoff
         end
         f.write("\n\n")
 
-        xref = f.pos
+        xref = f.pos + 1
 
         write_xref(f, pointers)
 
@@ -286,7 +286,7 @@ module Podoff
         f.write("\n")
       end
 
-      xref = f.pos
+      xref = f.pos + 1
 
       write_xref(f, pointers)
 
