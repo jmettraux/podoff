@@ -36,8 +36,8 @@ OptionParser.new do |op|
   op.banner = "\nUsage: ./#{__FILE__} [options] {fname}"
   op.separator ''
 
-  op.on('-r', '--refs', 'List refs') do
-    command = 'list_refs'
+  op.on('-o', '--objs', 'List objs') do
+    command = 'list_objs'
   end
   op.on('-w', '--rewrite', 'Rewrite') do
     command = 'rewrite'
@@ -67,9 +67,11 @@ doc = Podoff.load(fname)
 
 module Podoff::Commands
 
-  def self.list_refs(doc)
+  def self.list_objs(doc)
 
-    pp doc.objs.keys
+    doc.objs.each do |ref, o|
+      puts "#{ref} obj #{o.attributes.inspect}"
+    end
   end
 
   def self.rewrite(doc)
