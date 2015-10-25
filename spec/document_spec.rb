@@ -125,7 +125,8 @@ describe Podoff::Document do
         s = @d.write(:string)
         d = Podoff.parse(s)
 
-        expect(d.xref).to eq(680)
+        expect(d.xref).to eq(679)
+        expect(d.source[d.xref, 4]).to eq('xref')
       end
 
       it 'doesn\'t mind a slash in front of the font name' do
@@ -168,7 +169,8 @@ endobj
 
         d = Podoff.parse(@d.write(:string))
 
-        expect(d.xref).to eq(705)
+        expect(d.xref).to eq(704)
+        expect(d.source[d.xref, 4]).to eq('xref')
       end
 
       it 'accepts a block' do
@@ -196,7 +198,8 @@ endobj
         d = Podoff.parse(@d.write(:string))
 
         expect(d.source.index('<</Length 97>>')).to eq(618)
-        expect(d.xref).to eq(757)
+        expect(d.xref).to eq(756)
+        expect(d.source[d.xref, 4]).to eq('xref')
       end
 
       it 'returns the open stream when no arg given' do
@@ -276,7 +279,7 @@ endobj
       s = d.write(:string)
 
       expect(
-        d.write(:string).index(%{
+        s.index(%{
 7 0 obj
 <</Length 37>>
 stream
@@ -285,6 +288,36 @@ endstream
 endobj
         }.strip)
       ).to eq(722)
+    end
+
+    it 'writes a proper xref table' do
+
+      d = Podoff.load('pdfs/t0.pdf')
+
+      pa = d.re_add(d.page(1))
+      st = d.add_stream
+      st.bt(10, 20, 'hello open stream')
+      pa.insert_contents(st)
+
+      s = d.write(:string)
+
+      expect(s[808..-1].strip).to eq(%{
+xref
+0 1
+0000000000 65535 f
+3 1
+0000000611 00000 n
+7 1
+0000000723 00000 n
+trailer
+<<
+/Prev 414
+/Size 7
+/Root 1 0 R
+>>
+startxref 808
+%%EOF
+      }.strip)
     end
   end
 
@@ -336,7 +369,7 @@ trailer
 /Size 7
 /Root 1 0 R
 >>
-startxref 511
+startxref 510
 %%EOF
       }.strip)
     end

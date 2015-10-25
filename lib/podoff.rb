@@ -237,21 +237,14 @@ module Podoff
 
         @additions.values.each do |o|
           f.write("\n")
-          pointers[o.ref] = f.pos + 1
+          pointers[o.ref.split(' ').first.to_i] = f.pos + 1
           f.write(o.to_s)
         end
         f.write("\n\n")
 
-        xref = f.pos + 1
+        xref = f.pos
 
-        f.write("xref\n")
-        f.write("0 1\n")
-        f.write("0000000000 65535 f\n")
-
-        pointers.each do |k, v|
-          f.write("#{k.split(' ').first} 1\n")
-          f.write(sprintf("%010d 00000 n\n", v))
-        end
+        write_xref(f, pointers)
 
         f.write("trailer\n")
         f.write("<<\n")
@@ -281,42 +274,17 @@ module Podoff
       f.write(v)
       f.write("\n")
 
-      ptrs = {}
+      pointers = {}
 
       objs.keys.sort.each do |k|
-        ptrs[k] = f.pos + 1
+        pointers[k.split(' ').first.to_i] = f.pos + 1
         f.write(objs[k].source)
         f.write("\n")
       end
 
-      xref = f.pos + 1
-      max = objs.keys.inject(-1) { |i, k| [ i, k.split(' ')[0].to_i ].max }
+      xref = f.pos
 
-      #f.write("xref\n0 #{max}\n0000000000 65535 f\n")
-      f.write("xref\n0 1\n0000000000 65535 f\n")
-
-      partitions = [ [] ]
-      #
-      (1..max).each do |i|
-        k = "#{i} 0"
-        last = partitions.last
-        if ptrs.has_key?(k)
-          last << i
-        else
-          partitions << [] unless last == []
-        end
-      end
-      #
-      partitions.each do |part|
-
-        f.write("#{part.first} #{part.size}\n")
-
-        part.each do |i|
-          k = "#{i} 0"
-          #f.write(sprintf("%010d 00000 n %% %s\n", ptrs[k], k))
-          f.write(sprintf("%010d 00000 n\n", ptrs[k]))
-        end
-      end
+      write_xref(f, pointers)
 
       f.write("trailer\n")
       f.write("<<\n")
@@ -331,7 +299,27 @@ module Podoff
       f.is_a?(StringIO) ? f.string : nil
     end
 
-    private
+    protected
+
+    def write_xref(f, pointers)
+
+      f.write("xref\n")
+      f.write("0 1\n")
+      f.write("0000000000 65535 f\n")
+
+      pointers
+        .keys
+        .sort
+        .inject([ [] ]) { |ps, k|
+          ps << [] if ps.last != [] && k > ps.last.last + 1
+          ps.last << k
+          ps
+        }
+        .each { |part|
+          f.write("#{part.first} #{part.size}\n")
+          part.each { |k| f.write(sprintf("%010d 00000 n\n", pointers[k])) }
+        }
+    end
 
     def make_stream(&block)
 
