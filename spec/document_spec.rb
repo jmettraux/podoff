@@ -134,8 +134,7 @@ describe Podoff::Document do
         s = @d.write(:string)
         d = Podoff.parse(s)
 
-        expect(d.xref).to eq(679)
-        expect(d.source[d.xref, 4]).to eq('xref')
+        expect(d.xref).to eq(680)
       end
 
       it 'doesn\'t mind a slash in front of the font name' do
@@ -178,8 +177,7 @@ endobj
 
         d = Podoff.parse(@d.write(:string))
 
-        expect(d.xref).to eq(704)
-        expect(d.source[d.xref, 4]).to eq('xref')
+        expect(d.xref).to eq(705)
       end
 
       it 'accepts a block' do
@@ -207,8 +205,7 @@ endobj
         d = Podoff.parse(@d.write(:string))
 
         expect(d.source.index('<</Length 97>>')).to eq(618)
-        expect(d.xref).to eq(756)
-        expect(d.source[d.xref, 4]).to eq('xref')
+        expect(d.xref).to eq(757)
       end
 
       it 'returns the open stream when no arg given' do
@@ -324,7 +321,7 @@ trailer
 /Size 7
 /Root 1 0 R
 >>
-startxref 808
+startxref 809
 %%EOF
       }.strip)
     end
@@ -378,7 +375,7 @@ trailer
 /Size 7
 /Root 1 0 R
 >>
-startxref 510
+startxref 511
 %%EOF
       }.strip)
     end
