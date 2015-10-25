@@ -4,6 +4,8 @@
 
 == podoff 1.1.1  not yet released
 
+- FlateDecode stream if length > 98
+
 
 == podoff 1.1.0  released 2015-10-25
 

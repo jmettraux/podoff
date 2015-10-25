@@ -87,5 +87,17 @@ endobj
       }.strip)
     end
   end
+
+  describe '#to_s' do
+
+    it 'applies /Filter /FlateDecode if stream.size > 98' do
+
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
+      st.write("BT /Helvetica 35 Tf 123 456 Td (Hello Nada) Tj ET\n" * 4)
+
+      expect(st.to_s).to match(
+        /^1 0 obj\n<<\/Length 60 \/Filter \/FlateDecode>>/)
+    end
+  end
 end
 

@@ -23,6 +23,7 @@
 # Made in Japan.
 #++
 
+require 'zlib'
 require 'strscan'
 require 'stringio'
 
@@ -543,8 +544,15 @@ module Podoff
     def to_s
 
       s = @content.string
+      f = ''
+      if s.length > 98
+        f = ' /Filter /FlateDecode'
+        s = Zlib::Deflate.deflate(s)
+      end
 
-      "#{obj.ref} obj\n<</Length #{s.size}>>\nstream\n#{s}\nendstream\nendobj"
+      "#{obj.ref} obj\n" +
+      "<</Length #{s.size}#{f}>>\nstream\n#{s}\nendstream\n" +
+      "endobj"
     end
 
     protected
