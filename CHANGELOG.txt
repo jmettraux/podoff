@@ -2,7 +2,7 @@
 = podoff CHANGELOG.txt
 
 
-== podoff 1.1.1  not yet released
+== podoff 1.1.1  released 2015-10-26
 
 - reworked xref table output
 - FlateDecode stream if length > 98
