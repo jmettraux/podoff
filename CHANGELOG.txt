@@ -4,6 +4,7 @@
 
 == podoff 1.1.1  not yet released
 
+- reworked xref table output
 - FlateDecode stream if length > 98
 
 
