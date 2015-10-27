@@ -40,6 +40,9 @@ The author of this tool/library have no link whatsoever with the authors of the 
 
 ## links
 
+* http://qpdf.sourceforge.net/
+* https://github.com/qpdf/qpdf
+
 * http://www.slideshare.net/ange4771/advanced-pdf-tricks
 
 
