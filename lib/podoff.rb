@@ -309,7 +309,7 @@ module Podoff
 
       f.write("xref\n")
       f.write("0 1\n")
-      f.write("0000000000 65535 f\n")
+      f.write("0000000000 65535 f \n")
 
       pointers
         .keys
@@ -321,7 +321,7 @@ module Podoff
         }
         .each { |part|
           f.write("#{part.first} #{part.size}\n")
-          part.each { |k| f.write(sprintf("%010d 00000 n\n", pointers[k])) }
+          part.each { |k| f.write(sprintf("%010d 00000 n \n", pointers[k])) }
         }
     end
 
