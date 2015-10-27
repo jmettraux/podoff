@@ -8,7 +8,7 @@ A Ruby tool to deface PDF documents.
 
 Podoff is used to write over PDF documents. Those documents should first be uncompressed (and recompressed) (how? see [below](#preparing-documents-for-use-with-podoff))
 
-```
+```ruby
 require 'podoff'
 
 d = Podoff.load('tmp/d2.pdf')
