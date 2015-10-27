@@ -38,6 +38,11 @@ The author of this tool/library have no link whatsoever with the authors of the 
 * podoff parsing is naive, documents that contain uncompressed streams with "endobj", "startxref", "/Root" will disorient podoff
 
 
+## links
+
+* http://www.slideshare.net/ange4771/advanced-pdf-tricks
+
+
 ## LICENSE
 
 MIT, see [LICENSE.txt](LICENSE.txt)
