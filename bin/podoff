@@ -33,7 +33,7 @@ command = nil
 
 OptionParser.new do |op|
 
-  op.banner = "\nUsage: ./#{__FILE__} [options] {fname}"
+  op.banner = "\nUsage: ./#{__FILE__} [option] {fname}"
   op.separator ''
 
   op.on('-o', '--objs', 'List objs') do
@@ -42,8 +42,11 @@ OptionParser.new do |op|
   op.on('-w', '--rewrite', 'Rewrite') do
     command = 'rewrite'
   end
-  op.on('-s', '--stamp', 'Rewrite') do
+  op.on('-s', '--stamp', 'Apply time stamp at bottom of each page') do
     command = 'stamp'
+  end
+  op.on('-r', '--recompress', 'Recompress') do
+    command = 'recompress'
   end
 
   op.on('--version', 'Show version') do
@@ -63,23 +66,28 @@ fail ArgumentError.new("missing command -r / ...") unless command
 fname = ARGV.shift
 fail ArgumentError.new("missing {fname}") unless fname
 
-doc = Podoff.load(fname)
+doc =
+  if %w[ recompress ].include?(command)
+    nil
+  else
+    Podoff.load(fname)
+  end
 
 module Podoff::Commands
 
-  def self.list_objs(doc)
+  def self.list_objs(fname, doc)
 
     doc.objs.each do |ref, o|
       puts "#{ref} obj #{o.attributes.inspect}"
     end
   end
 
-  def self.rewrite(doc)
+  def self.rewrite(fname, doc)
 
     doc.rewrite($stdout)
   end
 
-  def self.stamp(doc)
+  def self.stamp(fname, doc)
 
     fo = doc.add_base_font('Helvetica')
     st = doc.add_stream {
@@ -94,7 +102,13 @@ module Podoff::Commands
 
     doc.write($stdout)
   end
+
+  def self.recompress(fname, doc)
+
+    system "qpdf --qdf --object-streams=disable #{fname} __out.pdf"
+    exec "qpdf __out.pdf -"
+  end
 end
 
-Podoff::Commands.send(command, doc)
+Podoff::Commands.send(command, fname, doc)
 
