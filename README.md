@@ -9,7 +9,33 @@ A Ruby tool to deface PDF documents.
 Podoff is used to write over PDF documents. Those documents should first be uncompressed (and recompressed) (how? see [below](#preparing-documents-for-use-with-podoff))
 
 ```
-# TODO
+require 'podoff'
+
+d = Podoff.load('tmp/d2.pdf')
+  # load my d2.pdf
+
+fo = d.add_base_font('Helvetica')
+  # make sure the document knows about "Helvetica"
+  # (one of the base 13 or 14 fonts PDF readers know about)
+
+
+pa = d.page(1)
+  # grab first page of the document
+
+pa.insert_font('/MyHelvetica', fo)
+  # link "MyHelvetica" to the base font above for this page
+
+st =
+  d.add_stream {
+    tf '/MyHelvetica', 12 # Helvetica size 12
+    bt 100, 100, "#{Time.now} stamped via podoff" # text at bottom left
+  }
+
+pa.insert_content(st)
+  # add content to page
+
+d.write('d3.pdf')
+  # write stamped document to d3.pdf
 ```
 
 If you're looking for serious libraries, look at
