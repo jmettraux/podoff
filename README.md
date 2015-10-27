@@ -6,7 +6,7 @@
 
 A Ruby tool to deface PDF documents.
 
-Podoff is used to write over PDF documents. Those documents should first be uncompressed (and recompressed).
+Podoff is used to write over PDF documents. Those documents should first be uncompressed (and recompressed) (how? see [below](#preparing-documents-for-use-with-podoff))
 
 ```
 # TODO
@@ -20,7 +20,22 @@ If you're looking for serious libraries, look at
 
 ## preparing documents for use with podoff
 
-TODO
+Podoff is naive and can't read xref tables in object streams. You have to work against PDF documents that have vanilla xref tables. [Qpdf](http://qpdf.sourceforge.net/) to the rescue.
+
+Given a doc0.pdf you can produce such a document by doing:
+```
+qpdf --qdf --object-streams=disable doc0.pdf doc1.pdf
+```
+doc1.pdf is now ready for overwriting with podoff.
+
+I use podoff to stamp or fill forms inside (well over) the PDF document, and I have to keep the resulting PDF around. It's better to work with compressed PDFs. Our doc0.pdf has its streams uncompressed.
+
+To recompress the streams but keep the vanilla xref table:
+```
+qpdf doc1.pdf doc2.pdf
+```
+
+doc2.pdf will be smaller and still usable with podoff.
 
 
 ## bin/podoff
