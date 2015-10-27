@@ -13,7 +13,7 @@ Podoff is used to write over PDF documents. Those documents should first be unco
 ```ruby
 require 'podoff'
 
-d = Podoff.load('tmp/d2.pdf')
+d = Podoff.load('d2.pdf')
   # load my d2.pdf
 
 fo = d.add_base_font('Helvetica')
