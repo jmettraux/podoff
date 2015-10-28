@@ -103,13 +103,14 @@ module Podoff::Commands
     doc.write($stdout)
   end
 
+  # Note: it's simpler to use qpdf directly, but this is included
+  # to keep the podoff experience seamless (well)
+  #
   def self.recompress(fname, doc)
 
-    system "qpdf --qdf --object-streams=disable #{fname} __a.pdf"
-    system "qpdf __a.pdf __b.pdf"
-    s = File.read('__b.pdf')
-    system "rm __a.pdf"
-    system "rm __b.pdf"
+    system "qpdf --object-streams=disable #{fname} __a.pdf"
+    s = File.read('__a.pdf')
+    system 'rm __a.pdf'
     $stdout.write(s)
   end
 end
