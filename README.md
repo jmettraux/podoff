@@ -52,18 +52,11 @@ Podoff is naive and can't read xref tables in object streams. You have to work a
 
 Given a doc0.pdf you can produce such a document by doing:
 ```
-qpdf --qdf --object-streams=disable doc0.pdf doc1.pdf
+qpdf --object-streams=disable doc0.pdf doc1.pdf
 ```
 doc1.pdf is now ready for overwriting with podoff.
 
-I use podoff to stamp or fill forms inside (well over) the PDF document, and I have to keep the resulting PDF around. It's better to work with compressed PDFs. Our doc0.pdf has its streams uncompressed.
-
-To recompress the streams but keep the vanilla xref table:
-```
-qpdf doc1.pdf doc2.pdf
-```
-
-doc2.pdf will be smaller and still usable with podoff.
+qpdf has rewritten the PDF, extracting the xref table but keeping the streams compressed.
 
 
 ## bin/podoff
