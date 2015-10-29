@@ -33,7 +33,7 @@ command = nil
 
 OptionParser.new do |op|
 
-  op.banner = "\nUsage: ./#{__FILE__} [option] {fname}"
+  op.banner = "\nUsage: #{__FILE__} [option] {fname}"
   op.separator ''
 
   op.on('-o', '--objs', 'List objs') do

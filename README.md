@@ -61,7 +61,24 @@ qpdf has rewritten the PDF, extracting the xref table but keeping the streams co
 
 ## bin/podoff
 
-TODO
+`bin/podoff` is a command-line tool for to preparing/check PDFs before use.
+
+```
+$ ./bin/podoff -h
+
+Usage: ./bin/podoff [option] {fname}
+
+    -o, --objs                       List objs
+    -w, --rewrite                    Rewrite
+    -s, --stamp                      Apply time stamp at bottom of each page
+    -r, --recompress                 Recompress
+    --version                        Show version
+    -h, --help                       Show this message
+```
+
+`--recompress` is mostly an alias for `qpdf --object-streams=disable in.pdf out.pf`
+
+`--stamp` is used to check whether podoff can add a time stamp on each page of an input PDF.
 
 
 ## disclaimer
