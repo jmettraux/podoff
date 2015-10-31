@@ -171,6 +171,7 @@ The author of this tool/library have no link whatsoever with the authors of the 
 ## known bugs
 
 * podoff parsing is naive, documents that contain uncompressed streams with "endobj", "startxref", "/Root" will disorient podoff
+* completely candid about encoding (only used it for British English documents so far)
 
 
 ## links
