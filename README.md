@@ -40,6 +40,8 @@ d.write('d3.pdf')
   # write stamped document to d3.pdf
 ```
 
+For more about the podoff "api", read ["how I use podoff"](#how-i-use-podoff).
+
 If you're looking for serious libraries, look at
 
 * https://github.com/payrollhero/pdf_tempura
@@ -79,6 +81,74 @@ Usage: ./bin/podoff [option] {fname}
 `--recompress` is mostly an alias for `qpdf --object-streams=disable in.pdf out.pf`
 
 `--stamp` is used to check whether podoff can add a time stamp on each page of an input PDF.
+
+
+## how I use podoff
+
+In the application which necessitated the creation of podoff, there are two PDF to generate from time to time.
+
+I keep those two PDFs in memory.
+
+```ruby
+# lib/myapp/pdf.rb
+
+require 'podoff'
+
+module MyApp::Pdf
+
+  DOC0 = Podoff.load('pdf_templates/d0.pdf')
+  DOC1 = Podoff.load('pdf_templates/d1.pdf')
+
+  def generate_doc0(data, path)
+
+    d = DOC0.dup # shallow copy of the document
+    d.add_fonts
+
+    pa2 = d.page(2)
+    st = d.add_stream
+
+    st.font 'MyHelv', 12 # font is an alias to tf
+    st.text 100, 100, data['customer_name']
+    st.text 100, 80, data['customer_phone']
+    st.text 100, 60, data['date'] if data['date']
+      # fill in customer info on page 2
+
+    pa2.insert_content(st)
+
+    pa3 = d.page(3)
+    pa3.insert_content(d.add_stream { check 52, 100 }) if data['discount']
+      # a single check on page 3 if the customer gets a discount
+
+    d.write(path)
+  end
+
+  # ...
+end
+
+module Podoff # adding a few helper methods to the podoff classes
+  class Document
+    def add_fonts
+      fo0 = add_base_font('/Helvetica')
+      fo1 = add_base_font('/ZapfDingbats')
+      pages.each { |pa|
+        pa = re_add(pa)
+        pa.insert_font('/MyHelv', fo0)
+        pa.insert_font('/MyZapf', fo1)
+      }
+    end
+  end
+  class Stream
+    def check(x, y)
+      font = @font            # save current font
+      self.tf '/MyZapf', 12   # switch to ZapfDingbats size 12
+      self.bt x, y, '3'       # check mark
+      @font = font            # get back to saved font
+    end
+  end
+end
+```
+
+The documents are kept in memory, as generation request comes, the get duplicated, incrementally updated and the filled documents are written to disk. The duplication doesn't copy the whole document file, only the references to the "obj" in the document get copied.
 
 
 ## disclaimer
