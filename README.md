@@ -105,7 +105,7 @@ module MyApp::Pdf
     d.add_fonts
 
     pa2 = d.page(2)
-    st = d.add_stream
+    st = d.add_stream # open stream...
 
     st.font 'MyHelv', 12 # font is an alias to tf
     st.text 100, 100, data['customer_name']
@@ -113,7 +113,7 @@ module MyApp::Pdf
     st.text 100, 60, data['date'] if data['date']
       # fill in customer info on page 2
 
-    pa2.insert_content(st)
+    pa2.insert_content(st) ... close stream (yes, you can use a block too)
 
     pa3 = d.page(3)
     pa3.insert_content(d.add_stream { check 52, 100 }) if data['discount']
@@ -126,10 +126,17 @@ module MyApp::Pdf
 end
 
 module Podoff # adding a few helper methods to the podoff classes
+
   class Document
+
+    # Makes sure Helvetica and ZapfDingbats are available
+    # on each page of the document
+    #
     def add_fonts
+
       fo0 = add_base_font('/Helvetica')
       fo1 = add_base_font('/ZapfDingbats')
+
       pages.each { |pa|
         pa = re_add(pa)
         pa.insert_font('/MyHelv', fo0)
@@ -137,8 +144,13 @@ module Podoff # adding a few helper methods to the podoff classes
       }
     end
   end
+
   class Stream
+
+    # Places a check mark ✓ at x, y
+    #
     def check(x, y)
+
       font = @font            # save current font
       self.tf '/MyZapf', 12   # switch to ZapfDingbats size 12
       self.bt x, y, '3'       # check mark
