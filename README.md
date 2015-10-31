@@ -162,6 +162,63 @@ end
 
 The documents are kept in memory, as generation request comes, the get duplicated, incrementally updated and the filled documents are written to disk. The duplication doesn't copy the whole document file, only the references to the "obj" in the document get copied.
 
+### Podoff::Document
+
+```ruby
+module Podoff::Document
+
+  def self.load(path, encoding='iso-8859-1')
+    # Podoff.load(path, encoding) is a shortcut to this method
+
+  def dup
+    # Makes a shallow copy of the document
+
+  def add_base_font(name)
+    # Given a name in the base 13/14 fonts readers are supposed to know,
+    # ensures the document has access to the font.
+    # Usually "Helvetica" or "ZapfDingbats".
+
+  def pages
+    # Returns an array of all the objs that are pages
+
+  def page(index)
+    # Starts at 1, returns a page obj. Understands negative indexes, like
+    # -1 for the last page.
+
+  def add_stream(src=nil, &block)
+    # Prepares a new obj with a stream
+    # If src is given places the src string in the stream.
+    # If a block is given executes the block in the context of the
+    # Podoff::Stream instance.
+    # If no src and no block, simply returns the Podoff::Stream wrapped inside
+    # of the new obj (see example code above)
+
+  def re_add(obj_or_ref)
+    # Given an obj or a ref (like "1234 0") to an obj, copies that obj
+    # and re-adds it to the document.
+    # This is necessary for the incremental updates podoff uses, if you add
+    # an obj to the Contents list of a page, you have to add it to the
+    # re-added page, not directly to the original page.
+
+  def write(path=:string)
+    # Writes the document, with incremental updates to a file given by its path.
+    # If the path is :string, will simply return the string containing the
+    # whole document
+
+  def rewrite(path=:string)
+    # Like #write, but squashes the incremental updates in the document.
+    # Takes more time and memory and might fail (remember, podoff is very
+    # naive (as his author is)). Test with care...
+```
+
+### Podoff::Obj
+
+TODO
+
+### Podoff::Stream
+
+TODO
+
 
 ## disclaimer
 
