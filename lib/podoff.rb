@@ -224,7 +224,7 @@ module Podoff
       add(obj)
     end
 
-    def write(path)
+    def write(path=:string)
 
       f =
         case path
