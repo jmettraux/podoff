@@ -165,7 +165,7 @@ The documents are kept in memory, as generation request comes, the get duplicate
 ### Podoff::Document
 
 ```ruby
-module Podoff::Document
+class Podoff::Document
 
   def self.load(path, encoding='iso-8859-1')
     # Podoff.load(path, encoding) is a shortcut to this method
@@ -209,15 +209,41 @@ module Podoff::Document
     # Like #write, but squashes the incremental updates in the document.
     # Takes more time and memory and might fail (remember, podoff is very
     # naive (as his author is)). Test with care...
+
+  #
+  # a bit lower-level...
+
+  def objs
+    # returns the hash { String/obj_ref => Podoff::Obj/obj_instance }
 ```
 
 ### Podoff::Obj
 
-TODO
+A PDF document is mostly a hierarchy of `obj` elements. `Podoff::Obj` points to such elements (see `Podoff::Document#objs`).
+
+```ruby
+class Podoff::Obj
+
+  def insert_font(font_nick, font_obj_or_ref)
+  def insert_contents(obj_or_ref)
+
+  def page_number
+    # FIXME only works with pdftk decompressed PDFs
+```
 
 ### Podoff::Stream
 
 TODO
+
+```ruby
+class Podoff::Stream
+
+  def tf(font_name, font_size)
+  alias :font :tf
+
+  def bt(x, y, text)
+  alias :text :bt
+```
 
 
 ## disclaimer
