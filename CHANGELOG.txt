@@ -4,6 +4,8 @@
 
 == podoff 1.1.2  not yet released
 
+- use /Kids in /Pages to determine pages and page order
+
 
 == podoff 1.1.1  released 2015-10-26
 

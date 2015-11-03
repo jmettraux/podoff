@@ -244,7 +244,7 @@ endobj
         o.send(:add_to_attribute, :contents, '9999 0')
 
         expect(o.attributes).to eq(
-          { type: '/Page', contents: '[151 0 R 9999 0 R]', pagenum: '1' })
+          { type: '/Page', contents: '[151 0 R 9999 0 R]' })
       end
     end
   end

@@ -85,7 +85,6 @@ describe Podoff do
       #end
 
       expect(d.pages.size).to eq(3)
-      expect(d.pages.first.attributes[:pagenum]).to eq('1')
       expect(d.objs['46 0'].attributes[:type]).to eq('/Annot')
     end
 

@@ -113,11 +113,6 @@ module Podoff
       @scanner.string
     end
 
-    def extract_ref(s)
-
-      s.gsub(/\s+/, ' ').gsub(/[^0-9 ]+/, '').strip
-    end
-
     def updated?
 
       @additions.any?
@@ -146,26 +141,23 @@ module Podoff
 
     def pages
 
-      @objs.values.select { |o| o.type == '/Page' }
+      #@objs.values.select { |o| o.type == '/Page' }
+
+      ps = @objs.values.find { |o| o.type == '/Pages' }
+      return nil unless ps
+
+      extract_refs(ps.attributes[:kids]).collect { |r| @objs[r] }
     end
 
     def page(index)
 
-      return nil if index == 0
-
-      pas = pages
-      return nil if pas.empty?
-
-      return (
-        index > 0 ? pas.at(index - 1) : pas.at(index)
-      ) unless pas.first.attributes[:pagenum]
-
       if index < 0
-        max = pas.inject(0) { |n, pa| [ n, pa.page_number ].max }
-        index = max + 1 + index
+        pages[index]
+      elsif index == 0
+        nil
+      else
+        pages[index - 1]
       end
-
-      pas.find { |pa| pa.page_number == index }
     end
 
     def new_ref
@@ -332,12 +324,21 @@ module Podoff
 
       s
     end
+
+    def extract_ref(s)
+
+      s.gsub(/\s+/, ' ').gsub(/[^0-9 ]+/, '').strip
+    end
+
+    def extract_refs(s)
+
+      s.gsub(/\s+/, ' ').scan(/(\d+ \d+) R/).collect(&:first)
+    end
   end
 
   class Obj
 
-    ATTRIBUTES =
-      { type: 'Type', contents: 'Contents', pagenum: 'pdftk_PageNum' }
+    ATTRIBUTES = { type: 'Type', contents: 'Contents', kids: 'Kids' }
 
     def self.extract(doc)
 

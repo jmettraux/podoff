@@ -39,10 +39,9 @@ describe Podoff::Document do
     it 'returns a page given an index (starts at 1)' do
 
       p = @d.page(1)
+      expect(p.ref).to eq('1 0')
       expect(p.class).to eq(Podoff::Obj)
       expect(p.type).to eq('/Page')
-      expect(p.attributes[:pagenum]).to eq('1')
-      expect(p.page_number).to eq(1)
     end
 
     it 'returns nil if the page doesn\'t exist' do
@@ -65,7 +64,6 @@ describe Podoff::Document do
     it 'returns pages from the last when the index is negative' do
 
       expect(@d.page(-1).ref).to eq('33 0')
-      expect(@d.page(-1).page_number).to eq(3)
     end
 
     it 'returns pages from the last when the index is negative (no PageNum)' do
@@ -254,8 +252,7 @@ endobj
 
         pa = d.re_add(d.page(1))
 
-        expect(pa.attributes).to eq(
-          { type: '/Page', contents: '151 0 R', pagenum: '1' })
+        expect(pa.attributes).to eq({ type: '/Page', contents: '151 0 R' })
       end
     end
   end
@@ -378,6 +375,26 @@ trailer
 startxref 511
 %%EOF
       }.strip)
+    end
+  end
+
+  describe '#extract_refs' do
+
+    it 'extracts a ref' do
+
+      expect(
+        Podoff::Document.allocate.send(:extract_refs, '17 0 R')
+      ).to eq([ '17 0' ])
+      expect(
+        Podoff::Document.allocate.send(:extract_refs, ' 17 0 R')
+      ).to eq([ '17 0' ])
+    end
+
+    it 'extracts a list of ref' do
+
+      expect(
+        Podoff::Document.allocate.send(:extract_refs, '[17 0 R 6 0 R]')
+      ).to eq([ '17 0', '6 0' ])
     end
   end
 end
