@@ -50,12 +50,11 @@ describe Podoff::Document do
       expect(@d.page(9)).to eq(nil)
     end
 
-    it 'returns the page, even for a doc without pdftk_PageNum' do
+    it 'returns a page given an index (starts at 1) (2)' do
 
       d = Podoff::Document.load('pdfs/t2.pdf')
 
       expect(d.page(1).ref).to eq('3 0')
-      expect(d.page(1).page_number).to eq(nil)
 
       expect(d.page(0)).to eq(nil)
       expect(d.page(2)).to eq(nil)
@@ -66,12 +65,11 @@ describe Podoff::Document do
       expect(@d.page(-1).ref).to eq('33 0')
     end
 
-    it 'returns pages from the last when the index is negative (no PageNum)' do
+    it 'returns pages from the last when the index is negative (2)' do
 
       d = Podoff::Document.load('pdfs/t2.pdf')
 
       expect(d.page(-1).ref).to eq('3 0')
-      expect(d.page(-1).page_number).to eq(nil)
     end
   end
 

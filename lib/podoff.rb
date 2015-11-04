@@ -414,12 +414,6 @@ module Podoff
       @attributes && @attributes[:type]
     end
 
-    def page_number
-
-      r = @attributes && @attributes[:pagenum]
-      r ? r.to_i : nil
-    end
-
     def insert_font(nick, obj_or_ref)
 
       fail ArgumentError.new("target '#{ref}' not a replica") \

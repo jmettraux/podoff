@@ -226,9 +226,6 @@ class Podoff::Obj
 
   def insert_font(font_nick, font_obj_or_ref)
   def insert_contents(obj_or_ref)
-
-  def page_number
-    # FIXME only works with pdftk decompressed PDFs
 ```
 
 ### Podoff::Stream
