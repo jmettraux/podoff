@@ -39,7 +39,7 @@ describe Podoff::Document do
     it 'returns a page given an index (starts at 1)' do
 
       p = @d.page(1)
-      expect(p.ref).to eq('1 0')
+      expect(p.ref).to eq('56 0')
       expect(p.class).to eq(Podoff::Obj)
       expect(p.type).to eq('/Page')
     end
@@ -62,7 +62,7 @@ describe Podoff::Document do
 
     it 'returns pages from the last when the index is negative' do
 
-      expect(@d.page(-1).ref).to eq('33 0')
+      expect(@d.page(-1).ref).to eq('58 0')
     end
 
     it 'returns pages from the last when the index is negative (2)' do
@@ -91,7 +91,7 @@ describe Podoff::Document do
       expect(d.objs.values.first.document).to equal(d)
       expect(@d.objs.values.first.document).to equal(@d)
 
-      expect(d.root).to eq('65 0')
+      expect(d.root).to eq('1 0')
     end
 
     it 'sports objs with properly recomputed attributes' do
@@ -130,7 +130,7 @@ describe Podoff::Document do
         s = @d.write(:string)
         d = Podoff.parse(s)
 
-        expect(d.xref).to eq(680)
+        expect(d.xref).to eq(687)
       end
 
       it 'doesn\'t mind a slash in front of the font name' do
@@ -173,7 +173,7 @@ endobj
 
         d = Podoff.parse(@d.write(:string))
 
-        expect(d.xref).to eq(705)
+        expect(d.xref).to eq(712)
       end
 
       it 'accepts a block' do
@@ -200,8 +200,8 @@ endobj
 
         d = Podoff.parse(@d.write(:string))
 
-        expect(d.source.index('<</Length 97>>')).to eq(618)
-        expect(d.xref).to eq(757)
+        expect(d.source.index('<</Length 97>>')).to eq(625)
+        expect(d.xref).to eq(764)
       end
 
       it 'returns the open stream when no arg given' do
@@ -288,7 +288,7 @@ BT 10 20 Td (hello open stream) Tj ET
 endstream
 endobj
         }.strip)
-      ).to eq(722)
+      ).to eq(729)
     end
 
     it 'writes a proper xref table' do
@@ -302,21 +302,21 @@ endobj
 
       s = d.write(:string)
 
-      expect(s[808..-1].strip).to eq(%{
+      expect(s[814..-1].strip).to eq(%{
 xref
 0 1
 0000000000 65535 f 
 3 1
-0000000611 00000 n 
+0000000618 00000 n 
 7 1
-0000000723 00000 n 
+0000000730 00000 n 
 trailer
 <<
-/Prev 414
+/Prev 413
 /Size 7
 /Root 1 0 R
 >>
-startxref 809
+startxref 816
 %%EOF
       }.strip)
     end

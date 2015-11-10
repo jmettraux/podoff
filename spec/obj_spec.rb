@@ -30,7 +30,8 @@ describe Podoff::Obj do
       o = @d.objs['20 0']
 
       expect(o.source).to eq(%{
-20 0 obj [21 0 R]
+20 0 obj
+<< /DA (/Calibri,Bold 10 Tf 0 g) /F 4 /FT /Tx /MK << >> /P 58 0 R /Rect [ 448.723 652.574 490.603 667.749 ] /Subtype /Widget /T (State) /TU (State) /Type /Annot >>
 endobj
       }.strip)
     end
@@ -86,12 +87,12 @@ endobj
 
     it 'returns the type of the obj' do
 
-      expect(@d.objs['23 0'].type).to eq('/Font')
+      expect(@d.objs['12 0'].type).to eq('/Font')
     end
 
     it 'returns nil if there is no type' do
 
-      expect(@d.objs['17 0'].type).to eq(nil)
+      expect(@d.objs['59 0'].type).to eq(nil)
     end
 
     it 'works on open streams' do
@@ -178,7 +179,7 @@ endobj
 
         pa.insert_contents(st)
 
-        expect(pa.source).to match(/\/Contents \[3 0 R #{st.ref} R\]\n/)
+        expect(pa.source).to match(/\/Contents \[151 0 R #{st.ref} R\]/)
       end
 
       it 'accepts an obj ref' do
@@ -189,7 +190,7 @@ endobj
 
         pa.insert_contents(st.ref)
 
-        expect(pa.source).to match(/\/Contents \[3 0 R #{st.ref} R\]\n/)
+        expect(pa.source).to match(/\/Contents \[151 0 R #{st.ref} R\]/)
       end
     end
 
