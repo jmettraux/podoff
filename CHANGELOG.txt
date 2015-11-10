@@ -2,7 +2,7 @@
 = podoff CHANGELOG.txt
 
 
-== podoff 1.1.2  not yet released
+== podoff 1.2.0  not yet released
 
 - require encoding upon loading and parsing, introduce Document#encoding
 - drop Podoff::Obj#page_number
