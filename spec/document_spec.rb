@@ -330,6 +330,8 @@ startxref 809
 
       s = d.rewrite(:string)
 
+      expect(s).to be_a_valid_pdf
+
       expect(s.strip).to eq(%{
 %PDF-1.4
 1 0 obj <</Type /Catalog /Pages 2 0 R>>
