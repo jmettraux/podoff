@@ -12,7 +12,7 @@ describe Podoff::Document do
 
   before :all do
 
-    @d = Podoff.load('pdfs/udocument0.pdf')
+    @d = Podoff.load('pdfs/udocument0.pdf', 'iso-8859-1')
   end
 
   describe '#objs' do
@@ -52,7 +52,7 @@ describe Podoff::Document do
 
     it 'returns a page given an index (starts at 1) (2)' do
 
-      d = Podoff::Document.load('pdfs/t2.pdf')
+      d = Podoff::Document.load('pdfs/t2.pdf', 'utf-8')
 
       expect(d.page(1).ref).to eq('3 0')
 
@@ -67,7 +67,7 @@ describe Podoff::Document do
 
     it 'returns pages from the last when the index is negative (2)' do
 
-      d = Podoff::Document.load('pdfs/t2.pdf')
+      d = Podoff::Document.load('pdfs/t2.pdf', 'utf-8')
 
       expect(d.page(-1).ref).to eq('3 0')
     end
@@ -108,7 +108,7 @@ describe Podoff::Document do
 
     before :each do
 
-      @d = Podoff.load('pdfs/t0.pdf')
+      @d = Podoff.load('pdfs/t0.pdf', 'utf-8')
     end
 
     describe '#add_base_font' do
@@ -128,7 +128,7 @@ describe Podoff::Document do
           '7 0 obj <</Type /Font /Subtype /Type1 /BaseFont /Helvetica>> endobj')
 
         s = @d.write(:string)
-        d = Podoff.parse(s)
+        d = Podoff.parse(s, 'utf-8')
 
         expect(d.xref).to eq(687)
       end
@@ -171,7 +171,7 @@ endstream
 endobj
         }.strip)
 
-        d = Podoff.parse(@d.write(:string))
+        d = Podoff.parse(@d.write(:string), 'utf-8')
 
         expect(d.xref).to eq(712)
       end
@@ -198,7 +198,7 @@ endstream
 endobj
         }.strip)
 
-        d = Podoff.parse(@d.write(:string))
+        d = Podoff.parse(@d.write(:string), 'utf-8')
 
         expect(d.source.index('<</Length 97>>')).to eq(625)
         expect(d.xref).to eq(764)
@@ -246,7 +246,7 @@ endobj
 
       it 'recomputes the attributes correctly' do
 
-        d = Podoff.load('pdfs/qdocument0.pdf')
+        d = Podoff.load('pdfs/qdocument0.pdf', 'iso-8859-1')
 
         pa = d.re_add(d.page(1))
 
@@ -270,7 +270,7 @@ endobj
 
     it 'writes open streams as well' do
 
-      d = Podoff.load('pdfs/t0.pdf')
+      d = Podoff.load('pdfs/t0.pdf', 'utf-8')
 
       pa = d.re_add(d.page(1))
       st = d.add_stream
@@ -293,7 +293,7 @@ endobj
 
     it 'writes a proper xref table' do
 
-      d = Podoff.load('pdfs/t0.pdf')
+      d = Podoff.load('pdfs/t0.pdf', 'utf-8')
 
       pa = d.re_add(d.page(1))
       st = d.add_stream
@@ -326,7 +326,7 @@ startxref 816
 
     it 'rewrites a document in one go' do
 
-      d = Podoff.load('pdfs/t2.pdf')
+      d = Podoff.load('pdfs/t2.pdf', 'utf-8')
 
       s = d.rewrite(:string)
 

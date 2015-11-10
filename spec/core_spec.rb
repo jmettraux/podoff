@@ -14,7 +14,7 @@ describe Podoff do
 
     it 'loads a PDF document' do
 
-      d = Podoff.load('pdfs/t0.pdf')
+      d = Podoff.load('pdfs/t0.pdf', 'utf-8')
 
       expect(d.class).to eq(Podoff::Document)
       expect(d.objs.keys).to eq([ '1 0', '2 0', '3 0', '4 0', '5 0', '6 0' ])
@@ -41,7 +41,7 @@ describe Podoff do
 
     it 'loads a PDF document' do
 
-      d = Podoff.load('pdfs/udocument0.pdf')
+      d = Podoff.load('pdfs/udocument0.pdf', 'iso-8859-1')
 
       expect(d.class).to eq(Podoff::Document)
       expect(d.xref).to eq(1612815)
@@ -56,7 +56,7 @@ describe Podoff do
 
     it 'loads a PDF document with incremental updates' do
 
-      d = Podoff.load('pdfs/t1.pdf')
+      d = Podoff.load('pdfs/t1.pdf', 'utf-8')
 
       expect(d.class).to eq(Podoff::Document)
       expect(d.xref).to eq(704)
@@ -72,7 +72,7 @@ describe Podoff do
 
     it 'loads a [re]compressed PDF documents' do
 
-      d = Podoff.load('pdfs/qdocument0.pdf')
+      d = Podoff.load('pdfs/qdocument0.pdf', 'iso-8859-1')
 
       expect(d.class).to eq(Podoff::Document)
       expect(d.xref).to eq(1612815)
@@ -91,7 +91,7 @@ describe Podoff do
     it 'rejects items that are not PDF documents' do
 
       expect {
-        Podoff.load('spec/spec_helper.rb')
+        Podoff.load('spec/spec_helper.rb', 'utf-8')
       }.to raise_error(ArgumentError, 'not a PDF file')
     end
   end

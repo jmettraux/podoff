@@ -12,7 +12,7 @@ describe Podoff::Obj do
 
   before :all do
 
-    @d = Podoff.load('pdfs/udocument0.pdf')
+    @d = Podoff.load('pdfs/udocument0.pdf', 'iso-8859-1')
   end
 
   describe '#document' do
@@ -151,7 +151,7 @@ endobj
 
     before :each do
 
-      @d = Podoff.load('pdfs/udocument0.pdf')
+      @d = Podoff.load('pdfs/udocument0.pdf', 'iso-8859-1')
     end
 
     describe '#insert_contents' do
@@ -238,7 +238,7 @@ endobj
 
       it 'adds to a list of references' do
 
-        d = Podoff.load('pdfs/qdocument0.pdf')
+        d = Podoff.load('pdfs/qdocument0.pdf', 'iso-8859-1')
 
         o = d.re_add('56 0')
 

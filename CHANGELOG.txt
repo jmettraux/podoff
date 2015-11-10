@@ -4,6 +4,7 @@
 
 == podoff 1.1.2  not yet released
 
+- require encoding upon loading and parsing, introduce Document#encoding
 - drop Podoff::Obj#page_number
 - use /Kids in /Pages to determine pages and page order
 

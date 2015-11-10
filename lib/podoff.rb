@@ -32,27 +32,32 @@ module Podoff
 
   VERSION = '1.1.2'
 
-  def self.load(path, encoding='iso-8859-1')
+  def self.load(path, encoding)
 
     Podoff::Document.load(path, encoding)
   end
 
-  def self.parse(s)
+  def self.parse(s, encoding)
 
-    Podoff::Document.new(s)
+    Podoff::Document.new(s, encoding)
   end
 
   class Document
 
-    def self.load(path, encoding='iso-8859-1')
+    def self.load(path, encoding)
 
-      Podoff::Document.new(File.open(path, 'r:' + encoding) { |f| f.read })
+      Podoff::Document.new(
+        File.open(path, 'r:' + encoding) { |f| f.read },
+        encoding
+      )
     end
 
     def self.parse(s)
 
       Podoff::Document.new(s)
     end
+
+    attr_reader :encoding
 
     attr_reader :scanner
     attr_reader :version
@@ -63,10 +68,12 @@ module Podoff
     #
     attr_reader :additions
 
-    def initialize(s)
+    def initialize(s, encoding)
 
       fail ArgumentError.new('not a PDF file') \
         unless s.match(/\A%PDF-\d+\.\d+\s/)
+
+      @encoding = encoding
 
       @scanner = ::StringScanner.new(s)
       @version = nil
