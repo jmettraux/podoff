@@ -17,3 +17,8 @@ branches:
 sudo: false
 cache: bundler
 
+addons:
+  apt:
+    packages:
+    - qpdf
+
