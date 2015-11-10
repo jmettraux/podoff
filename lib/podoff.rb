@@ -273,18 +273,18 @@ module Podoff
       pointers = {}
 
       objs.keys.sort.each do |k|
-        pointers[k.split(' ').first.to_i] = f.pos + 1
+        pointers[k.split(' ').first.to_i] = f.pos
         f.write(objs[k].source)
         f.write("\n")
       end
 
-      xref = f.pos + 1
+      xref = f.pos
 
       write_xref(f, pointers)
 
       f.write("trailer\n")
       f.write("<<\n")
-      f.write("/Size #{objs.size}\n")
+      f.write("/Size #{objs.size + 1}\n")
       f.write("/Root #{root} R\n")
       f.write(">>\n")
       f.write("startxref #{xref}\n")

@@ -330,8 +330,6 @@ startxref 816
 
       s = d.rewrite(:string)
 
-      expect(s).to be_a_valid_pdf
-
       expect(s.strip).to eq(%{
 %PDF-1.4
 1 0 obj <</Type /Catalog /Pages 2 0 R>>
@@ -360,21 +358,23 @@ xref
 0 1
 0000000000 65535 f 
 1 7
-0000000010 00000 n 
-0000000057 00000 n 
-0000000112 00000 n 
-0000000222 00000 n 
-0000000261 00000 n 
-0000000329 00000 n 
-0000000420 00000 n 
+0000000009 00000 n 
+0000000056 00000 n 
+0000000111 00000 n 
+0000000221 00000 n 
+0000000260 00000 n 
+0000000328 00000 n 
+0000000419 00000 n 
 trailer
 <<
-/Size 7
+/Size 8
 /Root 1 0 R
 >>
-startxref 511
+startxref 510
 %%EOF
       }.strip)
+
+      expect(s).to be_a_valid_pdf
     end
   end
 
