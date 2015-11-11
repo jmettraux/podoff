@@ -131,6 +131,8 @@ module Podoff
 
       self.class.allocate.instance_eval do
 
+        @encoding = o.encoding
+
         @scanner = ::StringScanner.new(o.source)
         @xref = o.xref
 

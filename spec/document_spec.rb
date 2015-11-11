@@ -82,6 +82,8 @@ describe Podoff::Document do
       expect(d.class).to eq(Podoff::Document)
       expect(d.hash).not_to eq(@d.hash)
 
+      expect(d.encoding).to eq('iso-8859-1')
+
       expect(d.objs.hash).not_to eq(@d.objs.hash)
 
       expect(d.objs.values.first.hash).not_to eq(@d.objs.values.first.hash)
