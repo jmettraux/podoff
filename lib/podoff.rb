@@ -267,7 +267,7 @@ module Podoff
       f.is_a?(StringIO) ? f.string : nil
     end
 
-    def rewrite(path=:string)
+    def rewrite(path=:string, encoding=nil)
 
       f =
         case path
@@ -275,6 +275,7 @@ module Podoff
           when String then File.open(path, 'wb')
           else path
         end
+      f.set_encoding(encoding || @encoding)
 
       v = source.match(/%PDF-\d+\.\d+/)[0]
       f.write(v)
