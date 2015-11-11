@@ -20,5 +20,21 @@ describe 'fixtures:' do
       end
     end
   end
+
+  describe 'pdfs/t0.pdf' do
+
+    it 'is encoded as UTF-8' do
+
+      expect('pdfs/t0.pdf').to be_encoded_as('utf-8')
+    end
+  end
+
+  describe 'pdfs/udocument0.pdf' do
+
+    it 'is encoded as ISO-8859-1' do
+
+      expect('pdfs/udocument0.pdf').to be_encoded_as('latin1')
+    end
+  end
 end
 

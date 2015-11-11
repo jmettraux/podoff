@@ -11,6 +11,26 @@ require 'ostruct'
 require 'podoff'
 
 
+RSpec::Matchers.define :be_encoded_as do |encoding|
+
+  match do |path|
+
+    fail ArgumentError.new("expecting a path (String) not a #{path.class}") \
+      unless path.is_a?(String)
+
+    $vic_r =
+      `(vim -c 'execute \"silent !echo \" . &fileencoding . " > _enc.txt" | q' #{path} > /dev/null 2>&1); cat _enc.txt; rm _enc.txt`.strip.downcase
+
+    $vic_r == encoding.downcase
+  end
+
+  failure_message do |path|
+
+    "expected #{encoding.downcase.inspect}, got #{$vic_r.to_s.inspect}"
+  end
+end
+
+
 RSpec::Matchers.define :be_a_valid_pdf do
 
   match do |o|
