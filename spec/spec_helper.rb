@@ -28,7 +28,6 @@ RSpec::Matchers.define :be_a_valid_pdf do
 
     $qpdf_r = `#{file_cmd} #{path}; echo; qpdf --check #{path} 2>&1`
     $qpdf_r = "#{$qpdf_r}\nexit: #{$?.exitstatus}"
-puts $qpdf_r
 
     $qpdf_r.match(/exit: 0$/)
   end

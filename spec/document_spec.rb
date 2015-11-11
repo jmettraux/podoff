@@ -130,7 +130,9 @@ describe Podoff::Document do
         s = @d.write(:string)
         d = Podoff.parse(s, 'utf-8')
 
-        expect(d.xref).to eq(687)
+        expect(d.xref).to eq(686)
+
+        expect(s).to be_a_valid_pdf
       end
 
       it 'doesn\'t mind a slash in front of the font name' do
@@ -171,9 +173,13 @@ endstream
 endobj
         }.strip)
 
-        d = Podoff.parse(@d.write(:string), 'utf-8')
+        s = @d.write(:string)
 
-        expect(d.xref).to eq(712)
+        expect(s).to be_a_valid_pdf
+
+        d = Podoff.parse(s, 'utf-8')
+
+        expect(d.xref).to eq(711)
       end
 
       it 'accepts a block' do
@@ -198,10 +204,14 @@ endstream
 endobj
         }.strip)
 
-        d = Podoff.parse(@d.write(:string), 'utf-8')
+        s = @d.write(:string)
+
+        expect(s).to be_a_valid_pdf
+
+        d = Podoff.parse(s, 'utf-8')
 
         expect(d.source.index('<</Length 97>>')).to eq(625)
-        expect(d.xref).to eq(764)
+        expect(d.xref).to eq(763)
       end
 
       it 'returns the open stream when no arg given' do
@@ -302,21 +312,23 @@ endobj
 
       s = d.write(:string)
 
+      expect(s).to be_a_valid_pdf
+
       expect(s[814..-1].strip).to eq(%{
 xref
 0 1
 0000000000 65535 f 
 3 1
-0000000618 00000 n 
+0000000617 00000 n 
 7 1
-0000000730 00000 n 
+0000000729 00000 n 
 trailer
 <<
 /Prev 413
-/Size 7
+/Size 8
 /Root 1 0 R
 >>
-startxref 816
+startxref 815
 %%EOF
       }.strip)
     end

@@ -223,7 +223,7 @@ module Podoff
       add(obj)
     end
 
-    def write(path=:string)
+    def write(path=:string, encoding=nil)
 
       f =
         case path
@@ -231,6 +231,7 @@ module Podoff
           when String then File.open(path, 'wb')
           else path
         end
+      f.set_encoding(encoding || @encoding)
 
       f.write(source)
 
@@ -240,19 +241,19 @@ module Podoff
 
         @additions.values.each do |o|
           f.write("\n")
-          pointers[o.ref.split(' ').first.to_i] = f.pos + 1
+          pointers[o.ref.split(' ').first.to_i] = f.pos
           f.write(o.to_s)
         end
         f.write("\n\n")
 
-        xref = f.pos + 1
+        xref = f.pos
 
         write_xref(f, pointers)
 
         f.write("trailer\n")
         f.write("<<\n")
         f.write("/Prev #{self.xref}\n")
-        f.write("/Size #{objs.size}\n")
+        f.write("/Size #{objs.size + 1}\n")
         f.write("/Root #{root} R\n")
         f.write(">>\n")
         f.write("startxref #{xref}\n")
