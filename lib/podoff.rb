@@ -227,13 +227,16 @@ module Podoff
 
     def write(path=:string, encoding=nil)
 
+      encoding ||= @encoding
+
       f =
         case path
           when :string, '-' then StringIO.new
           when String then File.open(path, 'wb')
           else path
         end
-      f.set_encoding(encoding || @encoding)
+      f.set_encoding(encoding) # internal encoding: nil
+      #f.set_encoding(encoding, encoding)
 
       f.write(source)
 
@@ -244,7 +247,7 @@ module Podoff
         @additions.values.each do |o|
           f.write("\n")
           pointers[o.ref.split(' ').first.to_i] = f.pos
-          f.write(o.to_s)
+          f.write(o.to_s.force_encoding(encoding))
         end
         f.write("\n\n")
 
@@ -269,13 +272,15 @@ module Podoff
 
     def rewrite(path=:string, encoding=nil)
 
+      encoding ||= @encoding
+
       f =
         case path
           when :string, '-' then StringIO.new
           when String then File.open(path, 'wb')
           else path
         end
-      f.set_encoding(encoding || @encoding)
+      f.set_encoding(encoding)
 
       v = source.match(/%PDF-\d+\.\d+/)[0]
       f.write(v)
@@ -285,7 +290,7 @@ module Podoff
 
       objs.keys.sort.each do |k|
         pointers[k.split(' ').first.to_i] = f.pos
-        f.write(objs[k].source)
+        f.write(objs[k].source.force_encoding(encoding))
         f.write("\n")
       end
 
