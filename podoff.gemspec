@@ -21,14 +21,13 @@ a tool to deface PDF documents
 
   #s.files = `git ls-files`.split("\n")
   s.files = Dir[
-    'Rakefile',
+    'Makefile',
     'lib/**/*.rb', 'spec/**/*.rb', 'test/**/*.rb',
     '*.gemspec', '*.txt', '*.rdoc', '*.md'
   ]
 
   #s.add_runtime_dependency 'tzinfo'
 
-  s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec', '>= 2.13.0'
 
   s.require_path = 'lib'
