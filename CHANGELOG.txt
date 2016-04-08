@@ -2,6 +2,9 @@
 = podoff CHANGELOG.txt
 
 
+== podoff 1.2.1  not yet released
+
+
 == podoff 1.2.0  released 2015-11-11
 
 - require encoding upon loading and parsing, introduce Document#encoding
