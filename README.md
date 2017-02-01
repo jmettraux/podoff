@@ -42,10 +42,14 @@ d.write('d3.pdf')
 
 For more about the podoff "api", read ["how I use podoff"](#how-i-use-podoff).
 
-If you're looking for serious libraries, look at
+If you're looking for serious libraries, look at:
 
 * https://github.com/payrollhero/pdf_tempura
 * https://github.com/prawnpdf/prawn-templates
+
+And more recently:
+
+* https://github.com/gettalong/hexapdf
 
 
 ## preparing documents for use with podoff
