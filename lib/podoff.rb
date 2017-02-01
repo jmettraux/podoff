@@ -153,7 +153,12 @@ module Podoff
       #@objs.values.select { |o| o.type == '/Page' }
 
       ps = @objs.values.find { |o| o.type == '/Pages' }
-      return nil unless ps
+
+      fail ArgumentError.new(
+        "no /Pages, the PDF is not usable by Podoff as is, you have to do " +
+        "`qpdf --object-streams=disable original.pdf unpacked.pdf` " +
+        "and use unpacked.pdf instead of original.pdf"
+      ) unless ps
 
       extract_refs(ps.attributes[:kids]).collect { |r| @objs[r] }
     end
