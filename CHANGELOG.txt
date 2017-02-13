@@ -2,6 +2,9 @@
 = podoff CHANGELOG.txt
 
 
+== podoff 1.2.2  not yet released
+
+
 == podoff 1.2.1  released 2017-02-01
 
 - Fail with ArgumentError when pdf not "unpacked"

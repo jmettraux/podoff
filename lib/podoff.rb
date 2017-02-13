@@ -1,4 +1,3 @@
-
 #--
 # Copyright (c) 2015-2017, John Mettraux, jmettraux@gmail.com
 #
@@ -30,7 +29,7 @@ require 'stringio'
 
 module Podoff
 
-  VERSION = '1.2.1'
+  VERSION = '1.2.2'
 
   def self.load(path, encoding)
 
