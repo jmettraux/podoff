@@ -46,7 +46,7 @@ module Podoff
     def self.load(path, encoding)
 
       Podoff::Document.new(
-        File.open(path, 'r:' + encoding) { |f| f.read },
+        File.open(path, 'rb:' + encoding) { |f| f.read },
         encoding
       )
     end
