@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.authors = [ 'John Mettraux' ]
   s.email = [ 'jmettraux@gmail.com' ]
   s.homepage = 'http://github.com/jmettraux/podoff'
-  s.rubyforge_project = 'rufus'
+  #s.rubyforge_project = 'rufus'
   s.license = 'MIT'
   s.summary = 'a tool to deface PDF documents'
 
@@ -21,9 +21,11 @@ a tool to deface PDF documents
 
   #s.files = `git ls-files`.split("\n")
   s.files = Dir[
+    'README.{md,txt}',
+    'CHANGELOG.{md,txt}', 'CREDITS.{md,txt}', 'LICENSE.{md,txt}',
     'Makefile',
-    'lib/**/*.rb', 'spec/**/*.rb', 'test/**/*.rb',
-    '*.gemspec', '*.txt', '*.rdoc', '*.md'
+    'lib/**/*.rb', #'spec/**/*.rb', 'test/**/*.rb',
+    "#{s.name}.gemspec",
   ]
 
   #s.add_runtime_dependency 'tzinfo'
