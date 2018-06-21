@@ -1,6 +1,10 @@
 
 .ruby-version
-.rspec
+#.rspec
+.rspec.out
+.errors
+.bxsinfo.yaml
+#.bxsenvs.yaml
 
 tmp/*.pdf
 
