@@ -30,7 +30,7 @@ a tool to deface PDF documents
 
   #s.add_runtime_dependency 'tzinfo'
 
-  s.add_development_dependency 'rspec', '>= 2.13.0'
+  s.add_development_dependency 'rspec', '~> 3.7'
 
   s.require_path = 'lib'
 end
