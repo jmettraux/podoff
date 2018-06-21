@@ -64,7 +64,7 @@ module Podoff
 
       loop do
 
-        i = @scanner.skip_until(
+        @scanner.skip_until(
           /(startxref\s+\d+|\d+\s+\d+\s+obj|\/Root\s+\d+\s+\d+\s+R)/)
 
         m = @scanner.matched
@@ -84,7 +84,7 @@ module Podoff
       if @root == nil
         @scanner.pos = 0
         loop do
-          i = @scanner.skip_until(/\/Root\s+\d+\s+\d+\s+R/)
+          @scanner.skip_until(/\/Root\s+\d+\s+\d+\s+R/)
           break unless @scanner.matched
           @root = extract_ref(@scanner.matched)
         end
