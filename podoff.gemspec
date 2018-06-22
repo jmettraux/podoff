@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.summary = 'a tool to deface PDF documents'
 
   s.description = %{
-a tool to deface PDF documents
+A library to write over existing PDF documents
   }.strip
 
   #s.files = `git ls-files`.split("\n")
