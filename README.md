@@ -141,11 +141,13 @@ module Podoff # adding a few helper methods to the podoff classes
 
       fo0 = add_base_font('/Helvetica')
       fo1 = add_base_font('/ZapfDingbats')
+      fo2 = add_base_font('/Courier')
 
       pages.each { |pa|
         pa = re_add(pa)
         pa.insert_font('/MyHelv', fo0)
         pa.insert_font('/MyZapf', fo1)
+        pa.insert_font('/MyMono', fo2)
       }
     end
   end
