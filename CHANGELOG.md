@@ -2,7 +2,7 @@
 # podoff CHANGELOG.md
 
 
-## podoff 1.2.3  not yet released
+## podoff 1.2.3  released 2019-03-12
 
 * Introduce Stream#rg(red, green, blue)
 * Silence 2 Ruby warnings
