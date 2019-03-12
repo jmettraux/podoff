@@ -12,7 +12,8 @@ rvm:
   #- jruby-19mode
   #- jruby-20mode
   #- jruby-9.1.13.0
-  - jruby-9.2.5.0
+  #
+  #- jruby-9.2.5.0
 
 #matrix:
 #  include:
