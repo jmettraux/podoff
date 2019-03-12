@@ -4,6 +4,7 @@
 
 ## podoff 1.2.3  not yet released
 
+* Introduce Stream#rg(red, green, blue)
 * Silence 2 Ruby warnings
 
 

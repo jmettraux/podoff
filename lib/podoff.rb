@@ -499,6 +499,7 @@ module Podoff
 
       @obj = obj
       @font = nil
+      @color = nil
       @content = StringIO.new
     end
 
@@ -510,11 +511,19 @@ module Podoff
     end
     alias :font :tf
 
+    def rg(red, green, blue)
+
+      @color = "#{red} #{green} #{blue} rg "
+    end
+    alias :color :rg
+    alias :rgb :rg
+
     def bt(x, y, text)
 
       @content.write "\n" if @content.size > 0
       @content.write "BT "
       @content.write @font if @font
+      @content.write @color if @color
       @content.write "#{x} #{y} Td (#{escape(text)}) Tj"
       @content.write " ET"
     end

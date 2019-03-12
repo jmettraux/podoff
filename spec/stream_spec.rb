@@ -66,6 +66,25 @@ endobj
     end
   end
 
+  describe '#rg' do
+
+    it 'sets the color for the text' do
+
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
+      st.rg(1, 0, 0)
+      st.bt(10, 20, 'hello()world')
+
+      expect(st.to_s).to eq(%{
+1 0 obj
+<</Length 43>>
+stream
+BT 1 0 0 rg 10 20 Td (hello\\(\\)world) Tj ET
+endstream
+endobj
+      }.strip)
+    end
+  end
+
   describe '#write' do
 
     it 'injects text into the stream' do
