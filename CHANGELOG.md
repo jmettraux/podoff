@@ -4,6 +4,8 @@
 
 ## podoff 1.2.4  not yet released
 
+* Let Stream#bt/#text accept a nil string
+
 
 ## podoff 1.2.3  released 2019-03-12
 

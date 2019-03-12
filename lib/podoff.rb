@@ -520,6 +520,8 @@ module Podoff
 
     def bt(x, y, text)
 
+      return unless text
+
       @content.write "\n" if @content.size > 0
       @content.write "BT "
       @content.write @font if @font

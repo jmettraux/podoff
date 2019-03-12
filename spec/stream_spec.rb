@@ -64,6 +64,21 @@ endstream
 endobj
       }.strip)
     end
+
+     it 'does not mind being given a nil text' do
+
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
+      st.bt(10, 20, nil)
+
+      expect(st.to_s).to eq(%{
+1 0 obj
+<</Length 0>>
+stream
+
+endstream
+endobj
+      }.strip)
+     end
   end
 
   describe '#rg' do
