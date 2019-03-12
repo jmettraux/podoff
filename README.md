@@ -112,6 +112,7 @@ module MyApp::Pdf
     st = d.add_stream # open stream...
 
     st.font 'MyHelv', 12 # font is an alias to tf
+    st.color 0, 0, 0 # rgb black
     st.text 100, 100, data['customer_name']
     st.text 100, 80, data['customer_phone']
     st.text 100, 60, data['date'] if data['date']
@@ -239,9 +240,19 @@ TODO
 ```ruby
 class Podoff::Stream
 
+  # set the current font and font size for the stream
+  #
   def tf(font_name, font_size)
   alias :font :tf
 
+  # set the current color for the stream
+  #
+  def rg(red, green, blue)
+  alias :rgb :rg
+  alias :color :rg
+
+  # write a piece of text at a given position
+  #
   def bt(x, y, text)
   alias :text :bt
 ```
