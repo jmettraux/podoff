@@ -8,3 +8,11 @@
 
 tmp/*.pdf
 
+*.swp
+.vimrc
+.viminfo
+.vimgrep
+#.vimshorts
+.vimmarks
+.vimspec
+
