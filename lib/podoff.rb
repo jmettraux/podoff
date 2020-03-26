@@ -545,7 +545,7 @@ module Podoff
       h = opts[:height] || opts[:h] || a[1]
 
       @content.write "\n" if @content.size > 0
-      @content.write lineup(rgb), ' rg ' if rgb
+      @content.write(lineup(rgb), ' rg ') if rgb
       @content.write lineup(x, y, w, h), ' re f'
     end
     alias rect re
@@ -560,7 +560,7 @@ module Podoff
       rgb = opts[:rgb]
 
       @content.write "\n" if @content.size > 0
-      @content.write lineup(rgb), ' rg ' if rgb
+      @content.write(lineup(rgb), ' rg ') if rgb
       @content.write lineup(x0, y0), ' m '
       xys.each_slice(2) { |x, y| @content.write lineup(x, y), ' l ' }
       @content.write 'h S'
