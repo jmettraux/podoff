@@ -544,9 +544,9 @@ module Podoff
       w = opts[:width] || opts[:w] || a[0]
       h = opts[:height] || opts[:h] || a[1]
 
-      @content.write "\n" if @content.size > 0
-      @content.write(lineup(rgb), ' rg ') if rgb
-      @content.write lineup(x, y, w, h), ' re f'
+      @content << "\n" if @content.size > 0
+      @content << lineup(rgb) << ' rg ' if rgb
+      @content << lineup(x, y, w, h) << ' re f'
     end
     alias rect re
     alias rectangle re
@@ -559,11 +559,11 @@ module Podoff
 
       rgb = opts[:rgb]
 
-      @content.write "\n" if @content.size > 0
-      @content.write(lineup(rgb), ' rg ') if rgb
-      @content.write lineup(x0, y0), ' m '
-      xys.each_slice(2) { |x, y| @content.write lineup(x, y), ' l ' }
-      @content.write 'h S'
+      @content << "\n" if @content.size > 0
+      @content << lineup(rgb) << ' rg ' if rgb
+      @content << lineup(x0, y0) << ' m '
+      xys.each_slice(2) { |x, y| @content << lineup(x, y) << ' l ' }
+      @content << 'h S'
     end
 
     def to_s
