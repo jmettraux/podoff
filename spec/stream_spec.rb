@@ -122,6 +122,28 @@ endobj
     end
   end
 
+  describe '#re' do
+
+    it 'adds a rectangle to the stream' do
+
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
+      st.re(10, 20, 30, 40, rgb: [ 0.0, 0.0, 0.0 ])
+      st.rect(11, 21, w: 31, h: 41, rgb: [ 0.1, 0.1, 0.1 ])
+      st.rectangle(12, 22, 32, 42, rgb: [ 0.2, 0.2, 0.2 ])
+
+      expect(st.to_s).to eq(%{
+1 0 obj
+<</Length 95>>
+stream
+0.0 0.0 0.0 rg 10 20 30 40 re f
+0.1 0.1 0.1 rg 11 21 31 41 re f
+0.2 0.2 0.2 rg 12 22 32 42 re f
+endstream
+endobj
+      }.strip)
+    end
+  end
+
   describe '#to_s' do
 
     it 'applies /Filter /FlateDecode if stream.size > 98' do

@@ -437,7 +437,7 @@ module Podoff
 
       add_to_attribute(:contents, re)
     end
-    alias :insert_content :insert_contents
+    alias insert_content insert_contents
 
     def to_s
 
@@ -509,32 +509,47 @@ module Podoff
 
       @font = "/#{n} #{font_size} Tf "
     end
-    alias :font :tf
+    alias font tf
 
     def rg(red, green, blue)
 
       @color = "#{red} #{green} #{blue} rg "
     end
-    alias :color :rg
-    alias :rgb :rg
+    alias color rg
+    alias rgb rg
 
     def bt(x, y, text)
 
       return unless text
 
       @content.write "\n" if @content.size > 0
-      @content.write "BT "
+      @content.write 'BT '
       @content.write @font if @font
       @content.write @color if @color
       @content.write "#{x} #{y} Td (#{escape(text)}) Tj"
-      @content.write " ET"
+      @content.write ' ET'
     end
-    alias :text :bt
+    alias text bt
 
     def write(text)
 
       @content.write(text)
     end
+
+    def re(x, y, *a)
+
+      opts = a.last.is_a?(Hash) ? a.pop : {}
+
+      rgb = opts[:rgb]
+      w = opts[:width] || opts[:w] || a[0]
+      h = opts[:height] || opts[:h] || a[1]
+
+      @content.write "\n" if @content.size > 0
+      @content.write lineup(rgb), ' rg ' if rgb
+      @content.write lineup(x, y, w, h), ' re f'
+    end
+    alias rect re
+    alias rectangle re
 
     def to_s
 
@@ -552,10 +567,8 @@ module Podoff
 
     protected
 
-    def escape(s)
-
-      s.gsub(/\(/, '\(').gsub(/\)/, '\)')
-    end
+    def escape(s); s.gsub(/\(/, '\(').gsub(/\)/, '\)'); end
+    def lineup(*a); a.flatten.collect(&:to_s).join(' '); end
   end
 end
 

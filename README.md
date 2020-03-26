@@ -245,18 +245,28 @@ class Podoff::Stream
   # set the current font and font size for the stream
   #
   def tf(font_name, font_size)
-  alias :font :tf
+  alias font tf
 
   # set the current color for the stream
   #
   def rg(red, green, blue)
-  alias :rgb :rg
-  alias :color :rg
+  alias rgb rg
+  alias color rg
 
   # write a piece of text at a given position
   #
   def bt(x, y, text)
-  alias :text :bt
+  alias text bt
+
+  # write a rectangle
+  #
+  def re(x, y, *a)
+  alias rect re
+  alias rectangle re
+    #
+  st.re(10, 20, 30, 40, rgb: [ 0.0, 0.0, 0.0 ])
+  st.rect(11, 21, w: 31, h: 41, rgb: [ 0.1, 0.1, 0.1 ])
+  st.rectangle(12, 22, 32, 42, rgb: [ 0.2, 0.2, 0.2 ])
 ```
 
 
