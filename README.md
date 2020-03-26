@@ -250,6 +250,7 @@ class Podoff::Stream
   # set the current color for the stream
   #
   def rg(red, green, blue)
+  def rg(string) # like '#fffff' or 'white'
   alias rgb rg
   alias color rg
 

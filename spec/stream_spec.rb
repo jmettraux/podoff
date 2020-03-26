@@ -87,13 +87,54 @@ endobj
 
       st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
       st.rg(1, 0, 0)
-      st.bt(10, 20, 'hello()world')
+      st.bt(10, 20, 'hello()red')
+      st.rg(0, 0.9, 0)
+      st.bt(10, 20, 'hello dark green')
 
       expect(st.to_s).to eq(%{
 1 0 obj
-<</Length 43>>
+<</Length 89>>
 stream
-BT 1 0 0 rg 10 20 Td (hello\\(\\)world) Tj ET
+BT 1 0 0 rg 10 20 Td (hello\\(\\)red) Tj ET
+BT 0 0.9 0 rg 10 20 Td (hello dark green) Tj ET
+endstream
+endobj
+      }.strip)
+    end
+
+    it 'accepts a basic color name' do
+
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
+      st.rg('blue')
+      st.bt(10, 20, 'hello blue')
+      st.rg('nada')
+      st.bt(10, 20, 'hello RED')
+
+      expect(st.to_s).to eq(%{
+1 0 obj
+<</Length 90>>
+stream
+BT 0.0 0.0 1.0 rg 10 20 Td (hello blue) Tj ET
+BT 1.0 0.0 0.0 rg 10 20 Td (hello RED) Tj ET
+endstream
+endobj
+      }.strip)
+    end
+
+    it 'accepts an hex (CSS) color' do
+
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
+      st.rg('#0000ff')
+      st.bt(10, 20, 'hello blue')
+      st.rg('#0f0')
+      st.bt(10, 20, 'hello green')
+
+      expect(st.to_s).to eq(%{
+1 0 obj
+<</Length 95>>
+stream
+BT 0.0 0.0 1.0 rg 10 20 Td (hello blue) Tj ET
+BT 0.0 0.0588 0.0 rg 10 20 Td (hello green) Tj ET
 endstream
 endobj
       }.strip)
@@ -127,17 +168,53 @@ endobj
     it 'adds a rectangle to the stream' do
 
       st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
+      st.re(10, 20, 30, 40)
+      st.rect(11, 21, w: 31, h: 41)
+      st.rectangle(12, 22, 32, 42)
+
+      expect(st.to_s).to eq(%{
+1 0 obj
+<</Length 50>>
+stream
+10 20 30 40 re f
+11 21 31 41 re f
+12 22 32 42 re f
+endstream
+endobj
+      }.strip)
+    end
+
+    it 'accepts points as arrays' do
+
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
+      st.rectangle([ 12, 22 ], [ 32, 42 ])
+      st.rect([ 11, 21 ], w: 31, h: 41)
+
+      expect(st.to_s).to eq(%{
+1 0 obj
+<</Length 33>>
+stream
+12 22 32 42 re f
+11 21 31 41 re f
+endstream
+endobj
+      }.strip)
+    end
+
+    it 'accepts a rgb: option' do
+
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
       st.re(10, 20, 30, 40, rgb: [ 0.0, 0.0, 0.0 ])
-      st.rect(11, 21, w: 31, h: 41, rgb: [ 0.1, 0.1, 0.1 ])
-      st.rectangle(12, 22, 32, 42, rgb: [ 0.2, 0.2, 0.2 ])
+      st.rect(11, 21, w: 31, h: 41, rgb: '#ffffff')
+      st.rectangle(12, 22, 32, 42, rgb: 'blue')
 
       expect(st.to_s).to eq(%{
 1 0 obj
 <</Length 95>>
 stream
 0.0 0.0 0.0 rg 10 20 30 40 re f
-0.1 0.1 0.1 rg 11 21 31 41 re f
-0.2 0.2 0.2 rg 12 22 32 42 re f
+1.0 1.0 1.0 rg 11 21 31 41 re f
+0.0 0.0 1.0 rg 12 22 32 42 re f
 endstream
 endobj
       }.strip)
@@ -150,16 +227,35 @@ endobj
 
       st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
       st.line(1, 1, 2, 2)
-      st.line([ 1, 1 ], [ 2, 2 ], [ 3, 3 ], rgb: [ 0.5, 0.5, 0.5 ])
-      st.line(1, 1, 2, 2, rgb: [ 0.7, 0.7, 0.7 ])
+      st.line([ 1, 1 ], [ 2, 2 ], [ 3, 3 ])
+      st.line(1, 1, 2, 2)
 
       expect(st.to_s).to eq(%{
 1 0 obj
-<</Length 83>>
+<</Length 53>>
 stream
 1 1 m 2 2 l h S
+1 1 m 2 2 l 3 3 l h S
+1 1 m 2 2 l h S
+endstream
+endobj
+      }.strip)
+    end
+
+    it 'accepts a rgb: option' do
+
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
+      st.line(1, 1, 2, 2, rgb: 'blue')
+      st.line([ 1, 1 ], [ 2, 2 ], [ 3, 3 ], rgb: [ 0.5, 0.5, 0.5 ])
+      st.line(1, 1, 2, 2, rgb: '#00FF00')
+
+      expect(st.to_s).to eq(%{
+1 0 obj
+<</Length 98>>
+stream
+0.0 0.0 1.0 rg 1 1 m 2 2 l h S
 0.5 0.5 0.5 rg 1 1 m 2 2 l 3 3 l h S
-0.7 0.7 0.7 rg 1 1 m 2 2 l h S
+0.0 1.0 0.0 rg 1 1 m 2 2 l h S
 endstream
 endobj
       }.strip)

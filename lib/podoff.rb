@@ -513,7 +513,7 @@ module Podoff
 
     def rg(*a)
 
-      @color = lineup(a, 'rg ')
+      @color = to_rg(a)
     end
     alias color rg
     alias rgb rg
@@ -536,24 +536,33 @@ module Podoff
       @content.write(text)
     end
 
-    def re(x, y, *a)
+      #def re(x, y, w, h, opts={})
+      #def re([ x, y ], [ w, h ], opts={})
+      #def re([ x, y ], opts)
+      #
+    def re(x, *a)
 
+      a = [ x, a ].flatten
       opts = a.last.is_a?(Hash) ? a.pop : {}
+      x = a.shift; y = a.shift
 
       rgb = opts[:rgb]
       w = opts[:width] || opts[:w] || a[0]
       h = opts[:height] || opts[:h] || a[1]
 
       @content << "\n" if @content.size > 0
-      @content << lineup(rgb) << ' rg ' if rgb
+      @content << to_rg(rgb) if rgb
       @content << lineup(x, y, w, h) << ' re f'
     end
     alias rect re
     alias rectangle re
 
-    def line(x0, y0, x1, y1, *a)
+      #def line(x0, y0, x1, y1, x2, y2, ..., opts={})
+      #def line([ x0, y0 ], [ x1, y1 ], [ x2, y2 ], ..., opts={})
+      #
+    def line(x0, y0, *a)
 
-      a = [ x0, y0, x1, y1, a ].flatten(1)
+      a = [ x0, y0, a ].flatten
       opts = a.last.is_a?(Hash) ? a.pop : {}
       x0, y0, *xys = a
 
@@ -562,9 +571,10 @@ module Podoff
 
       @content << "\n" if @content.size > 0
       @content << w.to_s << ' w ' if w
-      @content << lineup(rgb) << ' rg ' if rgb
+      @content << to_rg(rgb) if rgb
       @content << lineup(x0, y0) << ' m '
-      xys.each_slice(2) { |x, y| @content << lineup(x, y) << ' l ' }
+      xys.each_slice(2) { |x, y|
+        @content << lineup(x, y, 'l ') }
       @content << 'h S'
     end
 
@@ -586,6 +596,37 @@ module Podoff
 
     def escape(s); s.gsub(/\(/, '\(').gsub(/\)/, '\)'); end
     def lineup(*a); a.flatten.collect(&:to_s).join(' '); end
+
+    COLORS = {
+      'black' => [ 0.0, 0.0, 0.0 ],
+      'white' => [ 1.0, 1.0, 1.0 ],
+      'red' => [ 1.0, 0.0, 0.0 ],
+      'green' => [ 0.0, 1.0, 0.0 ],
+      'blue' => [ 0.0, 0.0, 1.0 ] }
+
+    def to_rg(a)
+
+      a = a[0].to_s if a.length == 1
+
+      lineup(
+        if a.is_a?(Array) && a.length == 3
+          a
+        elsif a.is_a?(String) && a.match(/^#?([0-9a-z]{3}|[0-9a-z]{6})$/i)
+          hex_to_rgb(a)
+        else
+          COLORS[a] || COLORS['red'] # else, stand out in RED
+        end,
+        'rg ')
+    end
+
+    def hex_to_rgb(s)
+
+      s = s[1..-1] if s[0, 1] == '#'
+
+      s.chars
+        .each_slice(s.length == 6 ? 2 : 1)
+        .collect { |x| (x.join.to_i(16) / 255.0).truncate(4) }
+    end
   end
 end
 
