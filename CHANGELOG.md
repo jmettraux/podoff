@@ -2,6 +2,9 @@
 # CHANGELOG.md
 
 
+## podoff 1.3.0  not yet released
+
+
 ## podoff 1.2.4  released 2019-03-12
 
 * Let Stream#bt/#text accept a nil string

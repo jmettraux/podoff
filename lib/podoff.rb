@@ -6,7 +6,7 @@ require 'stringio'
 
 module Podoff
 
-  VERSION = '1.2.4'
+  VERSION = '1.3.0'
 
   def self.load(path, encoding)
 
