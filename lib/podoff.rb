@@ -624,8 +624,10 @@ module Podoff
       s = s[1..-1] if s[0, 1] == '#'
 
       s.chars
-        .each_slice(s.length == 6 ? 2 : 1)
-        .collect { |x| (x.join.to_i(16) / 255.0).truncate(4) }
+        .each_slice(
+          s.length == 6 ? 2 : 1)
+        .collect { |x|
+          sprintf('%0.4f', (x.join.to_i(16) / 255.0)).gsub(/0+$/, '0') }
     end
   end
 end
