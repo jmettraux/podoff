@@ -6,6 +6,8 @@
 .bxsinfo.yaml
 #.bxsenvs.yaml
 
+Gemfile.lock
+
 tmp/*.pdf
 
 *.swp
