@@ -551,6 +551,21 @@ module Podoff
     alias rect re
     alias rectangle re
 
+    def line(x0, y0, x1, y1, *a)
+
+      a = [ x0, y0, x1, y1, a ].flatten(1)
+      opts = a.last.is_a?(Hash) ? a.pop : {}
+      x0, y0, *xys = a
+
+      rgb = opts[:rgb]
+
+      @content.write "\n" if @content.size > 0
+      @content.write lineup(rgb), ' rg ' if rgb
+      @content.write lineup(x0, y0), ' m '
+      xys.each_slice(2) { |x, y| @content.write lineup(x, y), ' l ' }
+      @content.write 'h S'
+    end
+
     def to_s
 
       s = @content.string

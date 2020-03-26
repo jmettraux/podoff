@@ -144,6 +144,28 @@ endobj
     end
   end
 
+  describe '#line' do
+
+    it 'adds a line to the stream' do
+
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
+      st.line(1, 1, 2, 2)
+      st.line([ 1, 1 ], [ 2, 2 ], [ 3, 3 ], rgb: [ 0.5, 0.5, 0.5 ])
+      st.line(1, 1, 2, 2, rgb: [ 0.7, 0.7, 0.7 ])
+
+      expect(st.to_s).to eq(%{
+1 0 obj
+<</Length 83>>
+stream
+1 1 m 2 2 l h S
+0.5 0.5 0.5 rg 1 1 m 2 2 l 3 3 l h S
+0.7 0.7 0.7 rg 1 1 m 2 2 l h S
+endstream
+endobj
+      }.strip)
+    end
+  end
+
   describe '#to_s' do
 
     it 'applies /Filter /FlateDecode if stream.size > 98' do

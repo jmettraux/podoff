@@ -237,7 +237,7 @@ class Podoff::Obj
 
 ### Podoff::Stream
 
-TODO
+Here are the methods used to write to streams.
 
 ```ruby
 class Podoff::Stream
@@ -258,7 +258,7 @@ class Podoff::Stream
   def bt(x, y, text)
   alias text bt
 
-  # write a rectangle
+  # draw a rectangle
   #
   def re(x, y, *a)
   alias rect re
@@ -267,6 +267,18 @@ class Podoff::Stream
   st.re(10, 20, 30, 40, rgb: [ 0.0, 0.0, 0.0 ])
   st.rect(11, 21, w: 31, h: 41, rgb: [ 0.1, 0.1, 0.1 ])
   st.rectangle(12, 22, 32, 42, rgb: [ 0.2, 0.2, 0.2 ])
+  # ...
+
+  # draw a line
+  #
+  def line(x0, y0, x1, y1, *a)
+    #
+  st.line(1, 1, 2, 2)
+  st.line(1, 1, 2, 2, 3, 3)
+  st.line([ 1, 1 ], [ 2, 2 ], [ 3, 3 ])
+  st.line([ 1, 1 ], [ 2, 2 ], [ 3, 3 ], rgb: [ 0.5, 0.5, 0.5 ])
+  st.line(1, 1, 2, 2, rgb: [ 0.7, 0.7, 0.7 ])
+  # ...
 ```
 
 
