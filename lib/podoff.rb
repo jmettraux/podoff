@@ -511,9 +511,9 @@ module Podoff
     end
     alias font tf
 
-    def rg(red, green, blue)
+    def rg(*a)
 
-      @color = "#{red} #{green} #{blue} rg "
+      @color = lineup(a, 'rg ')
     end
     alias color rg
     alias rgb rg
@@ -557,9 +557,11 @@ module Podoff
       opts = a.last.is_a?(Hash) ? a.pop : {}
       x0, y0, *xys = a
 
-      rgb = opts[:rgb]
+      rgb = opts[:rgb] || opts[:rg]
+      w = opts[:width] || opts[:w]
 
       @content << "\n" if @content.size > 0
+      @content << w.to_s << ' w ' if w
       @content << lineup(rgb) << ' rg ' if rgb
       @content << lineup(x0, y0) << ' m '
       xys.each_slice(2) { |x, y| @content << lineup(x, y) << ' l ' }

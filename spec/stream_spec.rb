@@ -164,6 +164,23 @@ endstream
 endobj
       }.strip)
     end
+
+    it 'accepts a width:/w: option' do
+
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
+      st.line(1, 1, [ 2, 2 ], 3, 3, rgb: [ 0.5, 0.5, 0.5 ], w: 5)
+      st.line([ 1, 1 ], [ 2, 2 ], [ 3, 3 ], rgb: [ 0.5, 0.5, 0.5 ], w: 0.05)
+
+      expect(st.to_s).to eq(%{
+1 0 obj
+<</Length 84>>
+stream
+5 w 0.5 0.5 0.5 rg 1 1 m 2 2 l 3 3 l h S
+0.05 w 0.5 0.5 0.5 rg 1 1 m 2 2 l 3 3 l h S
+endstream
+endobj
+      }.strip)
+    end
   end
 
   describe '#to_s' do
