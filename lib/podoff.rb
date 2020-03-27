@@ -518,16 +518,22 @@ module Podoff
     alias color rg
     alias rgb rg
 
-    def bt(x, y, text)
+    def bt(x, y, text, opts={})
 
       return unless text
 
-      @content.write "\n" if @content.size > 0
-      @content.write 'BT '
-      @content.write @font if @font
-      @content.write @color if @color
-      @content.write "#{x} #{y} Td (#{escape(text)}) Tj"
-      @content.write ' ET'
+      rgb = opts[:rgb]
+
+      @content << "\n" if @content.size > 0
+      @content << 'BT '
+      @content << @font if @font
+      if rgb
+        @content << to_rg(rgb)
+      elsif @color
+        @content << @color
+      end
+      @content << "#{x} #{y} Td (#{escape(text)}) Tj"
+      @content << ' ET'
     end
     alias text bt
 

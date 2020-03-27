@@ -257,6 +257,7 @@ class Podoff::Stream
   # write a piece of text at a given position
   #
   def bt(x, y, text)
+  def bt(x, y, text, rgb: 'blue')
   alias text bt
 
   # draw a rectangle

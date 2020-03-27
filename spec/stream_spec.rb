@@ -65,7 +65,7 @@ endobj
       }.strip)
     end
 
-     it 'does not mind being given a nil text' do
+    it 'does not mind being given a nil text' do
 
       st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
       st.bt(10, 20, nil)
@@ -78,7 +78,22 @@ stream
 endstream
 endobj
       }.strip)
-     end
+    end
+
+    it 'accepts a rgb: option' do
+
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
+      st.bt(10, 20, 'hello blue', rgb: 'blue')
+
+      expect(st.to_s).to eq(%{
+1 0 obj
+<</Length 45>>
+stream
+BT 0.0 0.0 1.0 rg 10 20 Td (hello blue) Tj ET
+endstream
+endobj
+      }.strip)
+    end
   end
 
   describe '#rg' do
