@@ -2,7 +2,9 @@
 # CHANGELOG.md
 
 
-## podoff 1.4.0  not yet released
+## podoff 1.4.0  released 2020-04-06
+
+* Introduce Stream#deflate=bool
 
 
 ## podoff 1.3.0  released 2020-03-30
