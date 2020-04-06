@@ -494,13 +494,15 @@ module Podoff
   class Stream
 
     attr_accessor :obj
+    attr_accessor :deflate
 
-    def initialize(obj=nil)
+    def initialize(obj=nil, opts={})
 
       @obj = obj
       @font = nil
       @color = nil
       @content = StringIO.new
+      @deflate = opts.has_key?(:deflate) ? opts[:deflate] : true
     end
 
     def tf(font_name, font_size)
@@ -588,7 +590,7 @@ module Podoff
 
       s = @content.string
       f = ''
-      if s.length > 98
+      if @deflate && s.length > 98
         f = ' /Filter /FlateDecode'
         s = Zlib::Deflate.deflate(s)
       end

@@ -304,6 +304,47 @@ endobj
       expect(st.to_s).to match(
         /^1 0 obj\n<<\/Length 60 \/Filter \/FlateDecode>>/)
     end
+
+    it 'does not apply /Filter /FlateDecode if stream.deflate == false' do
+
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'), deflate: false)
+      st.write("BT /Helvetica 35 Tf 123 456 Td (Hello Nada) Tj ET\n" * 4)
+      s = st.to_s
+
+      expect(s).to eq(%{
+1 0 obj
+<</Length 200>>
+stream
+BT /Helvetica 35 Tf 123 456 Td (Hello Nada) Tj ET
+BT /Helvetica 35 Tf 123 456 Td (Hello Nada) Tj ET
+BT /Helvetica 35 Tf 123 456 Td (Hello Nada) Tj ET
+BT /Helvetica 35 Tf 123 456 Td (Hello Nada) Tj ET
+
+endstream
+endobj
+      }.strip)
+    end
+
+    it 'does not apply /Filter /FlateDecode if stream.deflate == false' do
+
+      st = Podoff::Stream.new(OpenStruct.new(ref: '1 0'))
+      st.deflate = false
+      st.write("BT /Helvetica 35 Tf 123 456 Td (Hello Nada) Tj ET\n" * 4)
+      s = st.to_s
+
+      expect(s).to eq(%{
+1 0 obj
+<</Length 200>>
+stream
+BT /Helvetica 35 Tf 123 456 Td (Hello Nada) Tj ET
+BT /Helvetica 35 Tf 123 456 Td (Hello Nada) Tj ET
+BT /Helvetica 35 Tf 123 456 Td (Hello Nada) Tj ET
+BT /Helvetica 35 Tf 123 456 Td (Hello Nada) Tj ET
+
+endstream
+endobj
+      }.strip)
+    end
   end
 end
 
