@@ -2,6 +2,9 @@
 # CHANGELOG.md
 
 
+## podoff 1.4.0  not yet released
+
+
 ## podoff 1.3.0  released 2020-03-30
 
 * Introduce Podoff::Stream#line
